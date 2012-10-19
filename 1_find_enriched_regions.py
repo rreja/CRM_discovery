@@ -9,36 +9,41 @@ def process_files(dataDir,options):
     outfile2 =  os.path.join(dataDir,"all.pp.gff")
     #alldata  = os.path.join(dataDir,"*.gff")
     #os.system("cat "+alldata+" >"+outfile2)
-    
-    outfile1 =  os.path.join(dataDir,"tmp.genome.gff") 
+    mline = ""
+    #outfile1 =  os.path.join(dataDir,"tmp.genome.gff") 
     outfile3 = os.path.join(dataDir,"all.enriched.gff")
     outfile4 = os.path.join(dataDir,"all.background.gff")
-    tmp_genome = open(outfile1,'w')
+    #tmp_genome = open(outfile1,'r+')
     for line in input:
         if line.startswith("#"):
             continue
         chrom,end = line.split("\t")
-        get_coordinates(chrom,1,int(end),tmp_genome,options)
+        #get_coordinates(chrom,1,int(end),tmp_genome,options)
+        mline = mline+get_coordinates(chrom,1,int(end),options)
         
     # Creating bedtool object for all 1000 bp genome coordinates.
-    all_genome = pybedtools.BedTool(outfile1)
+    all_genome = pybedtools.BedTool(mline,from_string=True)
     # Applying the intersection function to get the enriched and non-enriched regions.
     
-    print all_genome.count()
-    #all_genome.intersect(outfile2,u=True).saveas(outfile3) # Gives all the unique chromosomal 1000bp coordinate that are enriched.
-    #all_genome.intersect(outfile2,v=True).saveas(outfile4) # Gives all the 1000 bp coordinate that are background.
-    
-    #os.system("rm "+outfile1)
-    #os.system("rm "+outfile2)
+
+    all_genome.intersect(outfile2,u=True).saveas(outfile3) # Gives all the unique chromosomal 1000bp coordinate that are enriched.
+    all_genome.intersect(outfile2,v=True).saveas(outfile4) # Gives all the 1000 bp coordinate that are background.
+    os.system("rm "+outfile2)
     
     
 
-def get_coordinates(chrom,start,end,genome_writer,options):
+def get_coordinates(chrom,start,end,options):
+    line = ""
     for i in range(start,end,options.step_size):
+       
         if not i+999 > end:
-            genome_writer.write(chrom+"\t.\t.\t"+str(i)+"\t"+str(i+999)+"\t.\t.\t.\t.\n")
+            #genome_writer.write(chrom+"\t.\t.\t"+str(i)+"\t"+str(i+999)+"\t.\t.\t.\t.\n")
+            line = line+chrom+"\t.\t.\t"+str(i)+"\t"+str(i+999)+"\t.\t.\t.\t.\n"
+            
         else:
-            genome_writer.write(chrom+"\t.\t.\t"+str(i)+"\t"+str(end)+"\t.\t.\t.\t.\n")
+            #genome_writer.write(chrom+"\t.\t.\t"+str(i)+"\t"+str(end)+"\t.\t.\t.\t.\n")
+            line = line+chrom+"\t.\t.\t"+str(i)+"\t"+str(end)+"\t.\t.\t.\t.\n"
+    return(line)
         
     
 
