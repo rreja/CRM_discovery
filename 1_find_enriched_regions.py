@@ -7,10 +7,9 @@ def process_files(dataDir,options):
     input = open(options.reffile,'rt')
     # Create a concatenation of all peak-pair gffs to calculate an overall pp file.
     outfile2 =  os.path.join(dataDir,"all.pp.gff")
-    #alldata  = os.path.join(dataDir,"*.gff")
-    #os.system("cat "+alldata+" >"+outfile2)
+    alldata  = os.path.join(dataDir,"*.gff")
+    os.system("cat "+alldata+" >"+outfile2)
     mline = ""
-    #outfile1 =  os.path.join(dataDir,"tmp.genome.gff") 
     outfile3 = os.path.join(dataDir,"all.enriched.gff")
     outfile4 = os.path.join(dataDir,"all.background.gff")
     #tmp_genome = open(outfile1,'r+')
