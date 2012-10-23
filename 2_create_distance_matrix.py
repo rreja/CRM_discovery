@@ -1,6 +1,7 @@
 import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
 import numpy as np
+from random import randint
 
 
 def process_files(idxdir,options):
@@ -16,11 +17,29 @@ def process_files(idxdir,options):
                 idxData[str(count)+"\t"+chrom+"\t"+start] = int(ttag)
             count = count+1
     print "Done reading all files in memory"
-    en_input = open(options.enrcfile,"r")
-    for line in en_input:
+    rand_num = randint(1,5000)
+    mainline = return_random_line_from_file(options,rand_num).split("\t")
+    print mainline
+    readfile = open(options.enrcfile,"r")
+    for line in readfile:
+        count = 1
+        if count == rand_num:
+            continue
+        chrom, junk,junk,start,end,junk,junk,junk,junk = line.split("\t")
         
     
+    
+    
+    
             
+        
+def return_random_line_from_file(options,rand_num):
+    count = 1
+    input = open(options.enrcfile,"r")
+    for line in input:
+        if count == rand_num:
+            return(line)
+        count = count+1
 
 
 usage = '''
