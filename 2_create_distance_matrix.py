@@ -1,7 +1,7 @@
 import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
 import numpy as np
-import pybedtools
+
 
 def process_files(idxdir,options):
     count = 1
@@ -15,8 +15,11 @@ def process_files(idxdir,options):
                 chrom, start,ftag,rtag,ttag = line.rstrip().split("\t")
                 idxData[str(count)+"\t"+chrom+"\t"+start] = int(ttag)
             count = count+1
-            
-
+    print "Done reading all files in memory"
+    en_input = open(options.enrcfile,"r")
+    for line in en_input:
+        
+    
             
 
 
@@ -49,12 +52,6 @@ def run():
         parser.print_help()
         sys.exit(1)
         
-    try:
-        import pybedtools
-    except ImportError:
-        print "You need to install pybedtools."
-        sys.exit(1)
-     
     if not os.path.isdir(args[0]):
         print "Input data direcotry containing all idx files."
     else:
