@@ -26,12 +26,7 @@ def process_files(idxdir,options):
         if count == rand_num:
             continue
         chrom, junk,junk,start,end,junk,junk,junk,junk = line.split("\t")
-        
-    
-    
-    
-    
-            
+                
         
 def return_random_line_from_file(options,rand_num):
     count = 1
