@@ -39,16 +39,16 @@ def process_files(idxdir,options):
         filehash[count] = fname
         count = count+1
     
-    create_matrix_for_regions(allData,filehash)               
+    create_matrix_for_regions(allData,filehash,options)               
 
-def create_matrix_for_regions(allData,filehash):
+def create_matrix_for_regions(allData,filehash,options):
     for majorkey, majorval in allData.items():
         key1,val1 = get_vectors(majorkey,allData,filehash)
         for minorkey, minorval in allData.items():
             key2,val2 = get_vectors(minorkey,allData,filehash)
             #print key1,key2,val1, val2
             #sys.exit(1)
-            compute_distance(key1,key2,val1,val2)
+            compute_distance(key1,key2,val1,val2,options,filehash)
             
 
 def get_vectors(key,allData,filehash):
@@ -79,7 +79,8 @@ def pairwise(seq):
     a, b = tee(seq)
     next(b)
     return izip(a, b)
-
+    
+        
 usage = '''
 input_paths may be:
 - a single file.
