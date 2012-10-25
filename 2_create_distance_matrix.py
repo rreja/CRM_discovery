@@ -2,6 +2,7 @@ import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
 import numpy as np
 from random import randint
+from itertools import izip, cycle, tee
 
 
 def process_files(idxdir,options):
@@ -24,35 +25,62 @@ def process_files(idxdir,options):
                 if line.startswith("chrom") or line.startswith("#"):
                     continue;
                 chrom, start,ftag,rtag,ttag = line.rstrip().split("\t")
-                idxData[chrom+"\t"+start] = int(ttag)
+                idxData[chrom+":"+start] = int(ttag)
                 
         # Calculating the tags present in the enrcihed regions.
         for key, val in encData.items():
             l = key.split(":")
-            for i in range(int(l[1]),int(l[2])):         
-                idx = l[0]+"\t"+str(i)
+            for i in range(int(l[1]),int(l[2])+1):         
+                idx = l[0]+":"+str(i)
                 if idx in idxData:
                     taglist.append(idxData[idx])
                 else:
                     taglist.append(0)
-                    
-            allData[str(count)+":"+key] = taglist
+            allData[str(count)+"_"+key] = bindata(taglist,options)
             taglist = []
         filehash[count] = fname
         count = count+1
     
-    create_matrix_for_regions(allData)               
+    create_matrix_for_regions(allData,filehash)               
 
-def create_matrix_for_regions(allData):
+def create_matrix_for_regions(allData,filehash):
     for majorkey, majorval in allData.items():
+        key1,val1 = get_vectors(majorkey,allData,filehash)
         for minorkey, minorval in allData.items():
-            compute_distance(majorkey,minorkey)
+            key2,val2 = get_vectors(minorkey,allData,filehash)
+            #print key1,key2,val1, val2
+            #sys.exit(1)
+            compute_distance(key1,key2,val1,val2)
             
-                        
+
+def get_vectors(key,allData,filehash):
+    tmpdict = {}
+    for k,v in filehash.items():
+        keystr = str(k)+"_"+key.split("_")[1]
+        tmpdict[keystr] = allData[keystr]
+    return(key.split("_")[1],tmpdict)
+
+
+def bindata(taglist,options):
+    bintaglist = []
+    summation = 0
+    tmplist = range(0,len(taglist)+1,options.bins)
+    for elem , next_elem in pairwise(tmplist):
+        for j in taglist[elem:next_elem:1]:
+            summation = summation+j
+        bintaglist.append(summation)
+        summation = 0
+    return(bintaglist)
+    
 def print_dict(dictionary):
     for key, val in dictionary.items():
         print key,val
 
+
+def pairwise(seq):
+    a, b = tee(seq)
+    next(b)
+    return izip(a, b)
 
 usage = '''
 input_paths may be:
@@ -74,8 +102,8 @@ def run():
                       help='File containing the enriched regions.')
     parser.add_option('-w', action='store', type='int', dest='window',default=100,
                       help='Size of the moving window.Default=100')
-    parser.add_option('-s', action='store', type='int', dest='stp_size',default=1,
-                      help='Slide the window with given bp length in an interval.Defalut=1')
+    parser.add_option('-b', action='store', type='int', dest='bins',default=5,
+                      help='Sub bin within a window. This will also be used as a sliding distance.Default=5')
     (options, args) = parser.parse_args()
     
     # Check if all the required arguments are provided, else exit     
