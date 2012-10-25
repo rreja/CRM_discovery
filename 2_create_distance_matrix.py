@@ -1,7 +1,5 @@
 import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
-import numpy as np
-from random import randint
 from itertools import izip, cycle, tee
 
 
