@@ -1,19 +1,50 @@
 import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
+import numpy
 
-def compute_distance(key1,key2,val1,val2,options,):
-    coor_list1 = parse_key(key1)
-    coor_list2 = parse_key(key2)
+
+def compute_distance(key1,key2,val1,val2,window,bins,filehash):
+    distance = []
+    binned_window_length = window/bins
+    if binned_window_length != 0:
+        vec1 = get_vectors(key1,val1,binned_window_length,filehash)
+        vec2 = get_vectors(key2,val2,binned_window_length,filehash)
+        for a in vec1:
+            for b in vec2:
+                dist = numpy.linalg.norm(numpy.array(a)-numpy.array(b))
+                distance.append(dist)
+                #print dist
+    else:
+        print "Your binned window length became zero!"
+        
+    return(max(distance))
     
 
-
-
-
-def parse_key(key1):
+    
+def get_vectors(key,val,window,filehash):
     region_list = []
-    tmplist1 = key1.split("_")
-    tmplist2 = tmplist1[1].split(":")
-    region_list = range(int(tmplist2[1]),int(tmplist2[2]),options.window)
+    count = 0
+    for k,v in filehash.items():
+        idx = str(k)+"_"+key
+        tmp = sliceIterator(val[idx],window)
+        if count == 0:
+            region_list = tmp
+        else:
+            region_list = merge_list(region_list,tmp)
+        count = count+1
+    return(region_list)
+          
+    
+
+def merge_list(list1,list2):
+    list3 = []
+    for i,j in map(None,list1,list2):
+        list3.append(i+j)
+    return(list3)
+
+def sliceIterator(lst, sliceLen):
+    for i in range(len(lst) - sliceLen + 1):
+        yield lst[i:i + sliceLen]
 
 
 

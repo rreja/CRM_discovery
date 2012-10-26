@@ -2,6 +2,7 @@ import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
 
+from compute_euclidean_distance import compute_distance
 
 def process_files(idxdir,options):
     count = 1
@@ -48,7 +49,8 @@ def create_matrix_for_regions(allData,filehash,options):
             key2,val2 = get_vectors(minorkey,allData,filehash)
             #print key1,key2,val1, val2
             #sys.exit(1)
-            compute_distance(key1,key2,val1,val2,options,filehash)
+            dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
+            print dist
             
 
 def get_vectors(key,allData,filehash):
