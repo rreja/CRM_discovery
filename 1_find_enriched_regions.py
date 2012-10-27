@@ -1,6 +1,5 @@
 import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
-import numpy as np
 import pybedtools
 
 def process_files(dataDir,options):
