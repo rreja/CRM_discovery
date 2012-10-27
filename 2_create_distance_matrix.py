@@ -1,6 +1,7 @@
 import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
+from collections import defaultdict
 
 from compute_euclidean_distance import compute_distance
 
@@ -43,6 +44,8 @@ def process_files(idxdir,options):
     create_matrix_for_regions(allData,filehash,options)               
 
 def create_matrix_for_regions(allData,filehash,options):
+    dist_matrix = defaultdict(lambda  : defaultdict(list))
+    offset_matrix = defaultdict(lambda  : defaultdict(list))
     for majorkey, majorval in allData.items():
         key1,val1 = get_vectors(majorkey,allData,filehash)
         for minorkey, minorval in allData.items():
@@ -50,7 +53,9 @@ def create_matrix_for_regions(allData,filehash,options):
             #print key1,key2,val1, val2
             #sys.exit(1)
             offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
-            print dist, offset
+            dist_matrix[key1][key2] = dist
+            offset_matrix[key1][key2] = offset
+            #print dist, offset 
             
 
 def get_vectors(key,allData,filehash):
@@ -58,7 +63,7 @@ def get_vectors(key,allData,filehash):
     for k,v in filehash.items():
         keystr = str(k)+"_"+key.split("_")[1]
         tmpdict[keystr] = allData[keystr]
-    return(key.split("_")[1],tmpdict)
+    return(key.split("_")[1],tmpdict)  # return key in the form of chr:start:end
 
 
 def bindata(taglist,options):
