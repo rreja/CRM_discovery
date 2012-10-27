@@ -4,25 +4,27 @@ import numpy
 
 
 def compute_distance(key1,key2,val1,val2,window,bins,filehash):
-    distance = []
+    #distance = []
+    distance = {}
     binned_window_length = window/bins
     if binned_window_length != 0:
         vec1 = get_vectors(key1,val1,binned_window_length,filehash)
         vec2 = get_vectors(key2,val2,binned_window_length,filehash)
-        for a in vec1:
-            for b in vec2:
-                dist = numpy.linalg.norm(numpy.array(a)-numpy.array(b))
-                distance.append(dist)
-                #print dist
+        for ak,av in vec1.items():
+            for bk,bv in vec2.items():
+                distance[str(ak)+":"+str(bk)] = numpy.linalg.norm(numpy.array(av)-numpy.array(bv))
+                #print str(ak)+":"+str(bk), distance[str(ak)+":"+str(bk)]
+                
     else:
         print "Your binned window length became zero!"
-        
-    return(max(distance))
+    sorted_list = sorted(distance, key=distance.get, reverse=True)
+    return(sorted_list[0], distance[sorted_list[0]])
     
 
     
 def get_vectors(key,val,window,filehash):
     region_list = []
+    region_dict = {}
     count = 0
     for k,v in filehash.items():
         idx = str(k)+"_"+key
@@ -32,7 +34,12 @@ def get_vectors(key,val,window,filehash):
         else:
             region_list = merge_list(region_list,tmp)
         count = count+1
-    return(region_list)
+    key = 0    
+    for j in region_list:
+        region_dict[key] = j
+        key = key+1
+    #return(region_list)
+    return(region_dict)
           
     
 
@@ -45,10 +52,6 @@ def merge_list(list1,list2):
 def sliceIterator(lst, sliceLen):
     for i in range(len(lst) - sliceLen + 1):
         yield lst[i:i + sliceLen]
-
-
-
-
 
 
 usage = '''

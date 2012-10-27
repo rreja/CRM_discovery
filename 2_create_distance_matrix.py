@@ -49,8 +49,8 @@ def create_matrix_for_regions(allData,filehash,options):
             key2,val2 = get_vectors(minorkey,allData,filehash)
             #print key1,key2,val1, val2
             #sys.exit(1)
-            dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
-            print dist
+            offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
+            print dist, offset
             
 
 def get_vectors(key,allData,filehash):
