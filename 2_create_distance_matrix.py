@@ -47,8 +47,8 @@ def process_files(idxdir,options,outfile1,outfile2):
     create_matrix_for_regions(encData,allData,filehash,options,out1,out2)               
 
 def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
-    known_dist = {}
-    known_offset = {}
+    known_dist = {} # dict to store all the distance that were computed for a pair.
+    known_offset = {} # dict to store all the offset that were computed for a pair.
     for majorkey, majorval in encData.items():
         #key1,val1 = get_vectors(majorkey,allData,filehash)
         val1 = get_vectors(majorkey,allData,filehash)
@@ -59,6 +59,7 @@ def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
             #print majorkey,minorkey
             #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
             known_key = minorkey+":"+majorkey
+            # We check here if this distance calculation was already done, since we are dealing with a symmetric matrix here.
             if majorkey+":"+minorkey in known_dist:
                 dist = known_dist[known_key]
                 offset = known_offset[known_key]
