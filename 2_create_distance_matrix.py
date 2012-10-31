@@ -5,13 +5,15 @@ from collections import defaultdict
 
 from compute_euclidean_distance import compute_distance
 
-def process_files(idxdir,options):
+def process_files(idxdir,options,outfile1,outfile2):
     count = 1
     idxData = {}
     encData = {}
     allData = {}
     filehash = {}
     taglist = []
+    out1 = open(outfile1,"w")
+    out2 = open(outfile2,"w")
     enriched = open(options.enrcfile,"r")
     for line in enriched:
         chrom,junk,junk,start,end,junk,junk,junk,junk  = line.rstrip().split("\t")
@@ -41,29 +43,47 @@ def process_files(idxdir,options):
         filehash[count] = fname
         count = count+1
     
-    create_matrix_for_regions(allData,filehash,options)               
+    print_matrix_header(out1,out2,encData)
+    create_matrix_for_regions(encData,allData,filehash,options,out1,out2)               
 
-def create_matrix_for_regions(allData,filehash,options):
-    dist_matrix = defaultdict(lambda  : defaultdict(list))
-    offset_matrix = defaultdict(lambda  : defaultdict(list))
-    for majorkey, majorval in allData.items():
-        key1,val1 = get_vectors(majorkey,allData,filehash)
-        for minorkey, minorval in allData.items():
-            key2,val2 = get_vectors(minorkey,allData,filehash)
-            #print key1,key2,val1, val2
-            #sys.exit(1)
-            offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
-            dist_matrix[key1][key2] = dist
-            offset_matrix[key1][key2] = offset
-            #print dist, offset 
+def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
+    #dist_matrix = defaultdict(lambda  : defaultdict(list))
+    #offset_matrix = defaultdict(lambda  : defaultdict(list))
+    for majorkey, majorval in encData.items():
+        #key1,val1 = get_vectors(majorkey,allData,filehash)
+        val1 = get_vectors(majorkey,allData,filehash)
+        line1 = majorkey
+        line2 = majorkey
+        for minorkey, minorval in encData.items():
+            val2 = get_vectors(minorkey,allData,filehash)
+            #print majorkey,minorkey
+            #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
+            offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
+            line1 = line1+"\t"+str(dist)
+            line2 = line2+"\t"+offset
+            ##dist_matrix[key1][key2] = dist
+            ##offset_matrix[key1][key2] = offset
+        out1.write(line1+"\n")
+        out2.write(line2+"\n")
+        print "One loop done"
+        sys.exit(1)
             
-
+def print_matrix_header(out1,out2,encData):
+    line = ""
+    for k,v in encData.items():
+        line = line+"\t"+k
+    out1.write(line+"\n")
+    out2.write(line+"\n")
+        
+    
 def get_vectors(key,allData,filehash):
     tmpdict = {}
     for k,v in filehash.items():
-        keystr = str(k)+"_"+key.split("_")[1]
+        #keystr = str(k)+"_"+key.split("_")[1]
+        keystr = str(k)+"_"+key
         tmpdict[keystr] = allData[keystr]
-    return(key.split("_")[1],tmpdict)  # return key in the form of chr:start:end
+    #return(key.split("_")[1],tmpdict)  # return key in the form of chr:start:end
+    return(tmpdict)
 
 
 def bindata(taglist,options):
@@ -116,11 +136,12 @@ def run():
     if not args:
         parser.print_help()
         sys.exit(1)
-        
+    outfile1 = os.path.join(os.path.dirname(options.enrcfile),"distance_matrix.txt")
+    outfile2 = os.path.join(os.path.dirname(options.enrcfile),"offset_matrix.txt")
     if not os.path.isdir(args[0]):
         print "Input data direcotry containing all idx files."
     else:
-        process_files(args[0],options)
+        process_files(args[0],options,outfile1,outfile2)
     
 if __name__ == "__main__":
     run() 
