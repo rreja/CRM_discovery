@@ -47,8 +47,8 @@ def process_files(idxdir,options,outfile1,outfile2):
     create_matrix_for_regions(encData,allData,filehash,options,out1,out2)               
 
 def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
-    #dist_matrix = defaultdict(lambda  : defaultdict(list))
-    #offset_matrix = defaultdict(lambda  : defaultdict(list))
+    known_dist = {}
+    known_offset = {}
     for majorkey, majorval in encData.items():
         #key1,val1 = get_vectors(majorkey,allData,filehash)
         val1 = get_vectors(majorkey,allData,filehash)
@@ -58,11 +58,19 @@ def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
             val2 = get_vectors(minorkey,allData,filehash)
             #print majorkey,minorkey
             #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
-            offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
+            known_key = minorkey+":"+majorkey
+            if majorkey+":"+minorkey in known_dist:
+                dist = known_dist[known_key]
+                offset = known_offset[known_key]
+            else:
+                
+                offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
+                known_dist[known_key] = dist
+                tmp = offset.split(":")
+                known_offset[known_key] = tmp[1]+":"+tmp[0]
+                
             line1 = line1+"\t"+str(dist)
             line2 = line2+"\t"+offset
-            ##dist_matrix[key1][key2] = dist
-            ##offset_matrix[key1][key2] = offset
         out1.write(line1+"\n")
         out2.write(line2+"\n")
         print "One loop done"
