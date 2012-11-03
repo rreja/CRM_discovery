@@ -50,32 +50,47 @@ def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
     known_dist = {}
     known_offset = {}
     for majorkey, majorval in encData.items():
-        #key1,val1 = get_vectors(majorkey,allData,filehash)
+
         val1 = get_vectors(majorkey,allData,filehash)
-        line1 = majorkey
-        line2 = majorkey
-        for minorkey, minorval in encData.items():
-            val2 = get_vectors(minorkey,allData,filehash)
-            #print majorkey,minorkey
-            #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
-            known_key = minorkey+":"+majorkey
-            if majorkey+":"+minorkey in known_dist:
-                dist = known_dist[known_key]
-                offset = known_offset[known_key]
-            else:
-                
-                offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
-                known_dist[known_key] = dist
-                tmp = offset.split(":")
-                known_offset[known_key] = tmp[1]+":"+tmp[0]
-                
-            line1 = line1+"\t"+str(dist)
-            line2 = line2+"\t"+offset
+        line1,line2 = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
+        
+        #line1 = majorkey
+        #line2 = majorkey
+        #for minorkey, minorval in encData.items():
+        #    val2 = get_vectors(minorkey,allData,filehash)
+        #    #print majorkey,minorkey
+        #    #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
+        #    known_key = minorkey+":"+majorkey
+        #    if majorkey+":"+minorkey in known_dist:
+        #        dist = known_dist[known_key]
+        #        offset = known_offset[known_key]
+        #    else:
+        #        
+        #        offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
+        #        known_dist[known_key] = dist
+        #        tmp = offset.split(":")
+        #        known_offset[known_key] = tmp[1]+":"+tmp[0]
+        #        
+        #    line1 = line1+"\t"+str(dist)
+        #    line2 = line2+"\t"+offset
+        
         out1.write(line1+"\n")
         out2.write(line2+"\n")
-        print "One loop done"
         sys.exit(1)
-            
+        #print "One loop done"
+        #sys.exit(1)
+          
+
+def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
+    line1 = majorkey
+    line2 = majorkey
+    for minorkey, minorval in encData.items():
+        val2 = get_vectors(minorkey,allData,filehash)
+        offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
+        line1 = line1+"\t"+str(dist)
+        line2 = line2+"\t"+offset
+    return(line1,line2)
+  
 def print_matrix_header(out1,out2,encData):
     line = ""
     for k,v in encData.items():
