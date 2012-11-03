@@ -1,7 +1,8 @@
-import sys, os, operator
+import sys, os, operator, random
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
 from collections import defaultdict
+import pp
 
 from compute_euclidean_distance import compute_distance
 
