@@ -1,0 +1,5 @@
+#PBS -l walltime=00:10:00
+#PBS -l nodes=1
+#PBS -j oe
+#PBS -q lionxi-pughhpc
+/gpfs/home/rzr142/work/install/Python-2.7.2/bin/python  /gpfs/home/rzr142/work/install/pp-1.6.2/ppserver.py -a
