@@ -8,8 +8,8 @@ def compute_distance(key1,key2,val1,val2,window,bins,filehash):
     distance = {}
     binned_window_length = window/bins
     if binned_window_length != 0:
-        vec1 = get_vectors(key1,val1,binned_window_length,filehash)
-        vec2 = get_vectors(key2,val2,binned_window_length,filehash)
+        vec1 = get_fullvectors(key1,val1,binned_window_length,filehash)
+        vec2 = get_fullvectors(key2,val2,binned_window_length,filehash)
         for ak,av in vec1.items():
             for bk,bv in vec2.items():
                 distance[str(ak)+":"+str(bk)] = numpy.linalg.norm(numpy.array(av)-numpy.array(bv))
@@ -22,7 +22,7 @@ def compute_distance(key1,key2,val1,val2,window,bins,filehash):
     
 
     
-def get_vectors(key,val,window,filehash):
+def get_fullvectors(key,val,window,filehash):
     region_list = []
     region_dict = {}
     count = 0
