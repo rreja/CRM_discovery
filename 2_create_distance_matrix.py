@@ -50,36 +50,39 @@ def process_files(idxdir,options,outfile1,outfile2):
 def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
     known_dist = {}
     known_offset = {}
+    job_server = pp.Server()
+    jobs = []
     for majorkey, majorval in encData.items():
 
         val1 = get_vectors(majorkey,allData,filehash)
-        line1,line2 = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
+        #line1,line2 = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
+        jobs.append(job_server.submit(run_job_per_line,(majorkey,val1,encData,allData,filehash,options)))
         
-        #line1 = majorkey
-        #line2 = majorkey
-        #for minorkey, minorval in encData.items():
-        #    val2 = get_vectors(minorkey,allData,filehash)
-        #    #print majorkey,minorkey
-        #    #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
-        #    known_key = minorkey+":"+majorkey
-        #    if majorkey+":"+minorkey in known_dist:
-        #        dist = known_dist[known_key]
-        #        offset = known_offset[known_key]
-        #    else:
-        #        
-        #        offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
-        #        known_dist[known_key] = dist
-        #        tmp = offset.split(":")
-        #        known_offset[known_key] = tmp[1]+":"+tmp[0]
-        #        
-        #    line1 = line1+"\t"+str(dist)
-        #    line2 = line2+"\t"+offset
+        ###line1 = majorkey
+        ###line2 = majorkey
+        ###for minorkey, minorval in encData.items():
+        ###    val2 = get_vectors(minorkey,allData,filehash)
+        ###    #print majorkey,minorkey
+        ###    #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
+        ###    known_key = minorkey+":"+majorkey
+        ###    if majorkey+":"+minorkey in known_dist:
+        ###        dist = known_dist[known_key]
+        ###        offset = known_offset[known_key]
+        ###    else:
+        ###        
+        ###        offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
+        ###        known_dist[known_key] = dist
+        ###        tmp = offset.split(":")
+        ###        known_offset[known_key] = tmp[1]+":"+tmp[0]
+        ###        
+        ###    line1 = line1+"\t"+str(dist)
+        ###    line2 = line2+"\t"+offset
         
-        out1.write(line1+"\n")
-        out2.write(line2+"\n")
-        sys.exit(1)
-        #print "One loop done"
+        #out1.write(line1+"\n")
+        #out2.write(line2+"\n")
         #sys.exit(1)
+    for job in jobs:
+        out1.write(job+"\n")
           
 
 def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
