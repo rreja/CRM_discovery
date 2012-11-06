@@ -2,7 +2,7 @@ import sys, os, operator, random
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
 from collections import defaultdict
-import pp
+from multiprocessing import Process
 
 from compute_euclidean_distance import compute_distance, get_fullvectors, merge_list, sliceIterator
 
@@ -50,47 +50,20 @@ def process_files(idxdir,options,outfile1,outfile2):
 def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
     known_dist = {}
     known_offset = {}
-    ppservers=("*",)
-    job_server = pp.Server(ppservers=ppservers)
     jobs = []
     count = 0
     for majorkey, majorval in encData.items():
 
         val1 = get_vectors(majorkey,allData,filehash)
         #line1,line2 = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
-        line = job_server.submit(run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options),depfuncs=(get_vectors,compute_distance,get_fullvectors,sliceIterator,merge_list,),modules=('os','sys','numpy','compute_euclidean_distance'))
-        break
-        #count = count+1
-        ###line1 = majorkey
-        ###line2 = majorkey
-        ###for minorkey, minorval in encData.items():
-        ###    val2 = get_vectors(minorkey,allData,filehash)
-        ###    #print majorkey,minorkey
-        ###    #offset, dist = compute_distance(key1,key2,val1,val2,options.window,options.bins,filehash)
-        ###    known_key = minorkey+":"+majorkey
-        ###    if majorkey+":"+minorkey in known_dist:
-        ###        dist = known_dist[known_key]
-        ###        offset = known_offset[known_key]
-        ###    else:
-        ###        
-        ###        offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
-        ###        known_dist[known_key] = dist
-        ###        tmp = offset.split(":")
-        ###        known_offset[known_key] = tmp[1]+":"+tmp[0]
-        ###        
-        ###    line1 = line1+"\t"+str(dist)
-        ###    line2 = line2+"\t"+offset
-        #if count == 4:
-        #    break
-        #out1.write(line1+"\n")
-        #out2.write(line2+"\n")
-        #sys.exit(1)
-    job_server.wait()
-    r1 = line()
-    print r1
-    job_server.print_stats()
-
-          
+        p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options))
+        p.start()
+        jobs.append(p)
+        count = count + 1
+        if count == 4:
+            for p in jobs:
+                p.join()
+            sys.exit(1)
 
 def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
     print majorkey
@@ -102,9 +75,9 @@ def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
         line1 = line1+"\t"+str(dist)
         line2 = line2+"\t"+offset
     #return(line1,line2)
-    #print line1
-    return(line1)
-  
+    print line1
+    #return(line1)
+    
 def print_matrix_header(out1,out2,encData):
     line = ""
     for k,v in encData.items():
