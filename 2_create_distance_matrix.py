@@ -2,7 +2,7 @@ import sys, os, operator, random
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
 from collections import defaultdict
-import pp
+from multiprocessing import Process
 
 from compute_euclidean_distance import compute_distance, get_fullvectors, merge_list, sliceIterator
 
@@ -47,41 +47,23 @@ def process_files(idxdir,options,outfile1,outfile2):
     print_matrix_header(out1,out2,encData)
     create_matrix_for_regions(encData,allData,filehash,options,out1,out2)               
 
-#class WriteFile:
-#    def __init__(self):
-#        self.line = ""
-#        self.lock = thread.allocate_lock()
-#    def write_to_file(self,out1,line):
-#        self.lock.acquire()
-#        self.out1.write(line)
-#        self.lock.release()
-        
 def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
     known_dist = {}
     known_offset = {}
-    ppservers=("lionxi1","lionxi2","lionxi15")
-    job_server = pp.Server(ppservers=ppservers)
     jobs = []
     count = 0
-    ##wrt = WriteFile() 
     for majorkey, majorval in encData.items():
+
         val1 = get_vectors(majorkey,allData,filehash)
         #line1,line2 = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
-        jobs.append(job_server.submit(run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options),
-                          depfuncs=(get_vectors,compute_distance,get_fullvectors,sliceIterator,merge_list,),
-                          modules=('os','sys','numpy','compute_euclidean_distance')))
-                          #,callback=wrt.write_to_file,
-                          #callbackargs=(out1,line))
-              
-        count = count+1
-        if count == 2:
-            break
-    job_server.wait()
-    for job in jobs:
-        print job()
-    job_server.print_stats()
-
-          
+        p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options))
+        p.start()
+        jobs.append(p)
+        count = count + 1
+        if count == 4:
+            for p in jobs:
+                p.join()
+            sys.exit(1)
 
 def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
     print majorkey
@@ -93,9 +75,9 @@ def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
         line1 = line1+"\t"+str(dist)
         line2 = line2+"\t"+offset
     #return(line1,line2)
-    #print line1
-    return(line1)
-  
+    print line1
+    #return(line1)
+    
 def print_matrix_header(out1,out2,encData):
     line = ""
     for k,v in encData.items():
