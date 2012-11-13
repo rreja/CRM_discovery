@@ -1,4 +1,4 @@
-import sys, os, operator, random
+import sys, os, operator, random, time
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
 from collections import defaultdict
@@ -55,18 +55,22 @@ def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
     for majorkey, majorval in encData.items():
 
         val1 = get_vectors(majorkey,allData,filehash)
-        #line1,line2 = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
-        p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options))
-        p.start()
-        jobs.append(p)
-        count = count + 1
-        if count == 4:
-            for p in jobs:
-                p.join()
-            sys.exit(1)
+        line1,line2,start = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
+        #start = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
+        #p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options))
+        #p.start()
+        #jobs.append(p)
+        #count = count + 1
+        #if count == 4:
+        #    for p in jobs:
+        #        p.join()
+        elapsed = (time.clock() - start)
+        print elapsed
+        sys.exit(1)
 
 def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
     print majorkey
+    start = time.clock()
     line1 = majorkey
     line2 = majorkey
     for minorkey, minorval in encData.items():
@@ -74,8 +78,9 @@ def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
         offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
         line1 = line1+"\t"+str(dist)
         line2 = line2+"\t"+offset
-    #return(line1,line2)
-    print line1
+    return(line1,line2,start)
+    #return(start)
+    #print line1
     #return(line1)
     
 def print_matrix_header(out1,out2,encData):
@@ -92,7 +97,9 @@ def get_vectors(key,allData,filehash):
         #keystr = str(k)+"_"+key.split("_")[1]
         keystr = str(k)+"_"+key
         tmpdict[keystr] = allData[keystr]
-    #return(key.split("_")[1],tmpdict)  # return key in the form of chr:start:end
+        #print len(allData[keystr])
+        
+    #return(key.split("_")[1],tmpdict)  # return key in the form of chr:start:en
     return(tmpdict)
 
 

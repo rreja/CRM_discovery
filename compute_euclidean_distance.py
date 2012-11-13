@@ -12,7 +12,7 @@ def compute_distance(key1,key2,val1,val2,window,bins,filehash):
         vec2 = get_fullvectors(key2,val2,binned_window_length,filehash)
         for ak,av in vec1.items():
             for bk,bv in vec2.items():
-                distance[str(ak)+":"+str(bk)] = numpy.linalg.norm(numpy.array(av)-numpy.array(bv))
+                distance[str(ak)+":"+str(bk)] = euclidean(av,bv) #numpy.linalg.norm(numpy.array(av)-numpy.array(bv))
                 #print str(ak)+":"+str(bk), distance[str(ak)+":"+str(bk)]
                 
     else:
@@ -20,7 +20,11 @@ def compute_distance(key1,key2,val1,val2,window,bins,filehash):
     sorted_list = sorted(distance, key=distance.get, reverse=True)
     return(sorted_list[0], distance[sorted_list[0]])
     
-
+def euclidean(x,y):
+    sumSq=0.0
+    for i in range(len(x)):
+        sumSq+=(x[i]-y[i])**2
+    return(sumSq)
     
 def get_fullvectors(key,val,window,filehash):
     region_list = []
