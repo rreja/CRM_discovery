@@ -4,6 +4,7 @@ from itertools import izip, cycle, tee
 from collections import defaultdict
 from multiprocessing import Process
 
+
 from compute_euclidean_distance import compute_distance, get_fullvectors, merge_list, sliceIterator
 
 def process_files(idxdir,options,outfile1,outfile2):
@@ -55,22 +56,22 @@ def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
     for majorkey, majorval in encData.items():
 
         val1 = get_vectors(majorkey,allData,filehash)
-        line1,line2,start = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
+        #line1,line2,start = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
         #start = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
-        #p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options))
-        #p.start()
-        #jobs.append(p)
-        #count = count + 1
-        #if count == 4:
-        #    for p in jobs:
-        #        p.join()
-        elapsed = (time.clock() - start)
-        print elapsed
+        p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options))
+        jobs.append(p)
+        p.start()
+        count = count + 1
+        if count == 8:
+            for p in jobs:
+                p.join()
+        ##elapsed = (time.clock() - start)
+        ##print elapsed
         sys.exit(1)
 
 def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
-    print majorkey
-    start = time.clock()
+    #print majorkey
+    #start = time.clock()
     line1 = majorkey
     line2 = majorkey
     for minorkey, minorval in encData.items():
@@ -78,10 +79,8 @@ def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
         offset, dist = compute_distance(majorkey,minorkey,val1,val2,options.window,options.bins,filehash)
         line1 = line1+"\t"+str(dist)
         line2 = line2+"\t"+offset
-    return(line1,line2,start)
-    #return(start)
-    #print line1
-    #return(line1)
+    #return(line1,line2,start)
+    return(line1,line2)
     
 def print_matrix_header(out1,out2,encData):
     line = ""
