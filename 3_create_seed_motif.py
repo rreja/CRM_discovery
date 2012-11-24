@@ -2,22 +2,48 @@ import sys, os, operator, random, time
 from optparse import OptionParser , IndentedHelpFormatter
 
 def process_files(infile,options):
-    randList = generate_random_numbers(options.sample,options.max)
-    input = open(infile,"rt")
+    for i in range(1,options.nseed):
+        Dmatx = {}
+        Omatx = {}
+        count = 0
+        randList = generate_random_numbers(options.sample,options.max)
+        # First reading the distance matrix file and sampling 100 rows.
+        input1 = open(infile,"rt")
+        for line in input1:
+            count = count+1
+            if count == 1: # Take the first line which is the heder and the order will be restored in it.
+                header = line.rstrip().split("\t")
+                header.remove('')
+            if count in randList:
+                tmp = line.rstrip().split("\t")
+                Dmatx[tmp[0]] = tmp[1:]
+            else:
+                continue
+        # Now reading the offset matrix file and reading the corresponding rows.
+        count2 = 0
+        input2 = open(options.offFile,"rt")
+        for line in input2:
+            count2 = count2+1
+            if count2 in randList:
+                tmp = line.rstrip().split("\t")
+                Omatx[tmp[0]] = tmp[1:]
+            else:
+                continue
+        sys.exit(1)
+                
+                
+            
+        
     
+
 
 
 def generate_random_numbers(s,m):
     randlist = []
-    for i in range(1,s):
-        j = random.randint(1,m)
-        if j not in randlist:
-            randlist.append(j)
+    randlist = random.sample(range(m), s)
     return(randlist)
 
-
-
-        
+ 
 usage = '''
 input_paths may be:
 - a single file.
@@ -40,13 +66,16 @@ def run():
                       help='Generate random nummbers between 1 and max.')
     parser.add_option('-o', action='store', dest='offFile',
                       help='File containing the offset matrix')
+    parser.add_option('-s', action='store', type='int', dest='nseed',default = 50,
+                      help='The number of seed motif to generate.')
     (options, args) = parser.parse_args()
     
     # Check if all the required arguments are provided, else exit     
     if not args:
         parser.print_help()
         sys.exit(1)
-        process_files(args[0],options)
+        
+    process_files(args[0],options)
     
 if __name__ == "__main__":
     run() 
