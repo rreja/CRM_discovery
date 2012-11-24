@@ -1,6 +1,6 @@
 import sys, os, operator
 from optparse import OptionParser , IndentedHelpFormatter
-import scipy.spatial.distance as spd
+#import scipy.spatial.distance as spd
 
 
 def compute_distance(key1,key2,val1,val2,window,bins,filehash):
@@ -12,7 +12,7 @@ def compute_distance(key1,key2,val1,val2,window,bins,filehash):
         vec2 = get_fullvectors(key2,val2,binned_window_length,filehash)
         for ak,av in vec1.items():
             for bk,bv in vec2.items():
-                distance[str(ak)+":"+str(bk)] = spd.cdist(av,bv,'euclidean')#euclidean(av,bv) 
+                distance[str(ak)+":"+str(bk)] = euclidean(av,bv)     
                 #print str(ak)+":"+str(bk), distance[str(ak)+":"+str(bk)]
                 
     else:
@@ -21,10 +21,10 @@ def compute_distance(key1,key2,val1,val2,window,bins,filehash):
     return(sorted_list[0], distance[sorted_list[0]])
     
 def euclidean(x,y):
-    sumSq=0.0
+    sumSq=0
     for i in range(len(x)):
         sumSq+=(x[i]-y[i])**2
-    return(sumSq)
+    return(int(sumSq))
     
 def get_fullvectors(key,val,window,filehash):
     region_list = []

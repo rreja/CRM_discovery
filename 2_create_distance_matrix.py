@@ -2,7 +2,8 @@ import sys, os, operator, random, time
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
 from collections import defaultdict
-from multiprocessing import Process
+from multiprocessing import Process,Queue
+import multiprocessing as mp
 
 
 from compute_euclidean_distance import compute_distance, get_fullvectors, merge_list, sliceIterator
@@ -49,29 +50,41 @@ def process_files(idxdir,options,outfile1,outfile2):
     create_matrix_for_regions(encData,allData,filehash,options,out1,out2)               
 
 def create_matrix_for_regions(encData,allData,filehash,options,out1,out2):
-    known_dist = {}
-    known_offset = {}
+    out_q1 = Queue()
+    resultdict = {}
+    num = 20
+    #known_offset = multiprocessing.Queue()
     jobs = []
     count = 0
     for majorkey, majorval in encData.items():
-
         val1 = get_vectors(majorkey,allData,filehash)
-        #line1,line2,start = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
-        #start = run_job_per_line(majorkey,val1,encData,allData,filehash,options)
-        p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options))
+        p = Process(target=run_job_per_line,args=(majorkey,val1,encData,allData,filehash,options,out_q1))
         jobs.append(p)
         p.start()
         count = count + 1
-        if count == 8:
+        if count == num:
+            start = time.clock()
+            for i in range(1,21):
+                resultdict.update(out_q1.get())
             for p in jobs:
                 p.join()
-        ##elapsed = (time.clock() - start)
-        ##print elapsed
-        sys.exit(1)
+            write_to_file(resultdict,out1,out2)
+            elapsed = (time.clock() - start)
+            print "Time take "+str(elapsed)
+            resultdict = {}
+            num = num+20
+    
 
-def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
-    #print majorkey
+        
+def write_to_file(dicti,out1,out2):
+    for k,v in dicti.items():
+        out1.write(v+"\n")
+        out2.write(k+"\n")
+        
+def run_job_per_line(majorkey,val1,encData,allData,filehash,options,out_q1):
+    print "Starting the process for "+ majorkey
     #start = time.clock()
+    tmpdict = {}
     line1 = majorkey
     line2 = majorkey
     for minorkey, minorval in encData.items():
@@ -80,7 +93,8 @@ def run_job_per_line(majorkey,val1,encData,allData,filehash,options):
         line1 = line1+"\t"+str(dist)
         line2 = line2+"\t"+offset
     #return(line1,line2,start)
-    return(line1,line2)
+    tmpdict[line2] = line1
+    out_q1.put(tmpdict)
     
 def print_matrix_header(out1,out2,encData):
     line = ""
