@@ -7,6 +7,7 @@ def process_files(infile,options):
         Omatx = {}
         count = 0
         randList = generate_random_numbers(options.sample,options.max)
+        #print randList
         # First reading the distance matrix file and sampling 100 rows.
         input1 = open(infile,"rt")
         for line in input1:
@@ -16,7 +17,7 @@ def process_files(infile,options):
                 header.remove('')
             if count in randList:
                 tmp = line.rstrip().split("\t")
-                Dmatx[tmp[0]] = map_list_to_list(tmp[1:],header)
+                Dmatx[tmp[0]] = map_list_to_list(tmp[1:],header,"dist")
             else:
                 continue
             if count > max(randList):
@@ -28,34 +29,50 @@ def process_files(infile,options):
             count2 = count2+1
             if count2 in randList:
                 tmp = line.rstrip().split("\t")
-                Omatx[tmp[0]] = map_list_to_list(tmp[1:],header)
+                Omatx[tmp[0]] = map_list_to_list(tmp[1:],header,"offset")
             else:
                 continue
             if count2 > max(randList):
                 break
-        
-        #for k,v in Omatx.items():
-        #    print k+"hello"
-        #    for key, val in v.items():
-        #        print key,val
-        #        sys.exit(1)
+        # Now for each of the 100 sampled rows, find the top 20 distances and their corresponding offsets.    
+        for key,val in Dmatx.items():
+            #print key
+            sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=True)
+            # Getting offset for the same key.
+            offsets = get_offsets(Omatx[key],sorted_val[:20])
+            #print sorted_val[:20]
+            (key,offsets)
+    
         sys.exit(1)
                 
                 
-            
+def get_offsets(dicti,tuple1):
+    offsetDict = {}
+    list1 = []
+    for i in range(len(tuple1)):
+        list1.append(tuple1[i][0])
+    for k,v in dicti.items():
+        if k in list1:
+            offsetDict[k] = v
+    return(offsetDict)
+        
         
     
-def map_list_to_list(list1,list2):
+def map_list_to_list(list1,list2,param):
     dicti = {}
-    for i in range(len(list2)):
-        dicti[list2[i]] = list1[i]
+    if param == "dist":
+        for i in range(len(list2)):
+            dicti[list2[i]] = int(list1[i])
+    elif param == "offset":
+        for i in range(len(list2)):
+            dicti[list2[i]] = list1[i]
     return(dicti)
         
 
 
 def generate_random_numbers(s,m):
     randlist = []
-    randlist = random.sample(range(m), s)
+    randlist = random.sample(range(2,m), s)
     return(randlist)
 
  
