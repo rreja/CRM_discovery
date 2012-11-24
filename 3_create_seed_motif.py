@@ -16,9 +16,11 @@ def process_files(infile,options):
                 header.remove('')
             if count in randList:
                 tmp = line.rstrip().split("\t")
-                Dmatx[tmp[0]] = tmp[1:]
+                Dmatx[tmp[0]] = map_list_to_list(tmp[1:],header)
             else:
                 continue
+            if count > max(randList):
+                break
         # Now reading the offset matrix file and reading the corresponding rows.
         count2 = 0
         input2 = open(options.offFile,"rt")
@@ -26,16 +28,29 @@ def process_files(infile,options):
             count2 = count2+1
             if count2 in randList:
                 tmp = line.rstrip().split("\t")
-                Omatx[tmp[0]] = tmp[1:]
+                Omatx[tmp[0]] = map_list_to_list(tmp[1:],header)
             else:
                 continue
+            if count2 > max(randList):
+                break
+        
+        #for k,v in Omatx.items():
+        #    print k+"hello"
+        #    for key, val in v.items():
+        #        print key,val
+        #        sys.exit(1)
         sys.exit(1)
                 
                 
             
         
     
-
+def map_list_to_list(list1,list2):
+    dicti = {}
+    for i in range(len(list2)):
+        dicti[list2[i]] = list1[i]
+    return(dicti)
+        
 
 
 def generate_random_numbers(s,m):
