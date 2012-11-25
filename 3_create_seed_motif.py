@@ -40,8 +40,12 @@ def process_files(infile,options):
             sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=True)
             # Getting offset for the same key.
             offsets = get_offsets(Omatx[key],sorted_val[:20])
+            for k,v in offsets.items():
+                print k,v
+            sys.exit(1)
             #print sorted_val[:20]
-            (key,offsets)
+            # Run this command from CRM_discovey folder: python 3_create_seed_motif.py -m 10 -n 7 -o testdata/output/tmpoffset.txt testdata/output/tmpdist.txt
+            # Create a function and pass these arguments.(key,offsets)
     
         sys.exit(1)
                 
