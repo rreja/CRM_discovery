@@ -12,12 +12,12 @@ def compute_distance(key1,key2,val1,val2,window,bins,filehash):
         vec2 = get_fullvectors(key2,val2,binned_window_length,filehash)
         for ak,av in vec1.items():
             for bk,bv in vec2.items():
-                distance[str(ak)+":"+str(bk)] = euclidean(av,bv)     
+                distance[str(ak)+":"+str(bk)] = euclidean(av,bv)     # This euclidean distance can be replaced by pearson corrletion coefficents. But the remember then you will need to consider max dist and not min.
                 #print str(ak)+":"+str(bk), distance[str(ak)+":"+str(bk)]
                 
     else:
         print "Your binned window length became zero!"
-    sorted_list = sorted(distance, key=distance.get, reverse=True)
+    sorted_list = sorted(distance, key=distance.get, reverse=False) # Change reverse=True if you want max distance.
     return(sorted_list[0], distance[sorted_list[0]])
     
 def euclidean(x,y):

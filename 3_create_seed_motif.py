@@ -36,7 +36,7 @@ def process_files(infile,options):
                 break
         # Now for each of the 100 sampled rows, find the top 20 distances and their corresponding offsets.    
         for key,val in Dmatx.items():
-            #print key
+            print key
             sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=True)
             # Getting offset for the same key.
             offsets = get_offsets(Omatx[key],sorted_val[:20])
