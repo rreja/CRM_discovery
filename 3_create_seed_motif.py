@@ -20,6 +20,7 @@ def process_files(infile,options):
                 Dmatx[tmp[0]] = map_list_to_list(tmp[1:],header,"dist")
             else:
                 continue
+            # If you have read all the lines in randList, just stop reading the file.
             if count > max(randList):
                 break
         # Now reading the offset matrix file and reading the corresponding rows.
@@ -41,6 +42,7 @@ def process_files(infile,options):
             ## Getting offset for the same key.
             ## Taking top 100 closest loci and looking which "key" window was found overlapping the most.
             offsets = get_offsets(Omatx[key],sorted_val[:100]) # Change the number here to change the 'top x' selection.
+            # Get all the enriched windows or continue with the loop if you do not file a row that has a window represented atleast 20 times.
             encWindows = find_most_enriched_window(offsets)
             # iterate through all the enriched windows and create average profile
             if not encWindows == 0:
@@ -50,9 +52,8 @@ def process_files(infile,options):
             else:
                 continue
             sys.exit(1)
-            ##print sorted_val[:20]
             ## Run this command from CRM_discovey folder: python 3_create_seed_motif.py -m 10 -n 7 -o testdata/output/tmpoffset.txt testdata/output/tmpdist.txt
-            ## Create a function and pass these arguments.(key,offsets)
+            
     
         sys.exit(1)
                 
