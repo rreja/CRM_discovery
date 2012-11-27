@@ -32,7 +32,9 @@ def get_fullvectors(key,val,window,filehash):
     count = 0
     for k,v in filehash.items():
         idx = str(k)+"_"+key
+        # Moving window function
         tmp = sliceIterator(val[idx],window)
+        # Initialize the list 
         if count == 0:
             region_list = tmp
         else:

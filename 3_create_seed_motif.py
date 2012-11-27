@@ -1,15 +1,18 @@
 import sys, os, operator, random, time
 from optparse import OptionParser , IndentedHelpFormatter
+from itertools import izip, cycle, tee
 
-def process_files(infile,options):
+
+def process_files(idxData,filehash,options):
+    # The main loop to create "n" seed motifs
     for i in range(1,options.nseed):
         Dmatx = {}
         Omatx = {}
         count = 0
         randList = generate_random_numbers(options.sample,options.max)
-        print randList
+        #print randList
         # First reading the distance matrix file and sampling 100 rows.
-        input1 = open(infile,"rt")
+        input1 = open(options.distFile,"rt")
         for line in input1:
             count = count+1
             if count == 1: # Take the first line which is the heder and the order will be restored in it.
@@ -46,9 +49,12 @@ def process_files(infile,options):
             encWindows = find_most_enriched_window(offsets)
             # iterate through all the enriched windows and create average profile
             if not encWindows == 0:
-                for k,v in encWindows.items():
-                    # Get the coordinates for actual window in that locus.
-                    k = get_actual_cord(k,(v.split(":"))[1],options)
+                # Binned vectors corresponding to all the enriched windows
+                allVectors = create_data_vectors(encWindows,idxData,filehash,options)
+                meanVector = get_mean(allVectors,len(allVectors.keys()))
+                std  = get_std(allVectors,meanVector)
+                print std
+                sys.exit(1)
             else:
                 continue
             sys.exit(1)
@@ -56,7 +62,48 @@ def process_files(infile,options):
             
     
         sys.exit(1)
-                
+        
+        
+           
+def create_data_vectors(encwindows,idxdata,filehash,options):
+    taglist = []
+    allData = {}
+    #iterate over all enriched windows and get their tag.
+    for k,v in encwindows.items():
+        # Get the coordinates for actual window in that locus.
+        new_k = get_actual_cord(k,(v.split(":"))[1],options)
+        l = new_k.split(":")
+        # Iterate over all tag/tab files one by one
+        for key,val in filehash.items():
+            for i in range(int(l[1]),int(l[2])):
+                # idx if formed by fileNo:chr+start, where filenNo is stored in filehash. Each entry in filehash corresponds to one tab/tag file.
+                idx = str(key)+":"+l[0]+":"+str(i)
+                if idx in idxdata:
+                    taglist.append(idxdata[idx])
+                else:
+                    taglist.append(0)       
+        allData[k] = bindata(taglist,options)
+        taglist = []
+    return(allData)   
+    
+def read_tag_files(idxdir,options):
+    idxData = {}
+    filehash = {}
+    count = 1
+    # Reading all idx files in the directory one by one
+    for fname in os.listdir(idxdir):
+        if fname.endswith("idx") or fname.endswith("tab"):
+            input = open(os.path.join(idxdir,fname),"r")
+            for line in input:
+                if line.startswith("chrom") or line.startswith("#"):
+                    continue;
+                chrom, start,ftag,rtag,ttag = line.rstrip().split("\t")
+                # Appending the count string in the key to recognize each tag file seperately in the same idxData dict
+                idxData[str(count)+":"+chrom+":"+start] = int(ttag)
+            filehash[count] = fname
+            count = count+1
+    return(idxData,filehash)            
+    
 def find_most_enriched_window(offsets):
     tmpdict = {}
     returndict = {}
@@ -81,7 +128,7 @@ def find_most_enriched_window(offsets):
             
 def get_actual_cord(key,windowNo,options):
     tmp = key.split(":")
-    start = int(tmp[1]) + options.bins*windowNo
+    start = int(tmp[1]) + options.bins*int(windowNo)
     end = start + options.windowLength
     return(tmp[0]+":"+str(start)+":"+str(end))
          
@@ -110,7 +157,53 @@ def generate_random_numbers(s,m):
     randlist = random.sample(range(2,m), s)
     return(randlist)
 
- 
+def get_mean(dicti,n):
+    summed_list = []
+    count = 0
+    for k,v in dicti.items():
+        if count == 0:
+            summed_list = v
+        else:
+            for j in range(0,len(v)):
+                summed_list[j] = summed_list[j] + v[j]
+        count = count + 1
+    newList = [float(x)/n for x in summed_list]
+    return(newList)
+
+def get_std(dicti,meanList):
+    count = 0
+    sum_of_squares = []
+    for k,v in dicti.items():
+        if count == 0:
+            for j in range(len(meanList)):
+                sum_of_squares[j] = (v[j] - meanList[j])*(v[j] - meanList[j])
+        else:
+            for m in range(len(meanList)):
+                sum_of_squares[m] = sum_of_squares[m] + (v[m] - meanList[m])**2
+        count = count + 1
+    tmpnewList = [float(x)/(n-1) for x in sum_of_squares]
+    newList = [sqrt(x) for x in tmpnewList]
+    return(newList)
+                
+            
+
+def bindata(taglist,options):
+    bintaglist = []
+    summation = 0
+    tmplist = range(0,len(taglist)+1,options.bins)
+    for elem , next_elem in pairwise(tmplist):
+        for j in taglist[elem:next_elem:1]:
+            summation = summation+j
+        bintaglist.append(summation)
+        summation = 0
+    return(bintaglist)
+
+def pairwise(seq):
+    a, b = tee(seq)
+    next(b)
+    return izip(a, b)
+    
+
 usage = '''
 input_paths may be:
 - a single file.
@@ -133,6 +226,8 @@ def run():
                       help='Generate random nummbers between 1 and max.')
     parser.add_option('-o', action='store', dest='offFile',
                       help='File containing the offset matrix')
+    parser.add_option('-d', action='store', dest='distFile',
+                      help='File containing the distance matrix')
     parser.add_option('-s', action='store', type='int', dest='nseed',default = 50,
                       help='The number of seed motif to generate.')
     parser.add_option('-w', action='store', type='int', dest='windowLength',default=100,
@@ -146,7 +241,8 @@ def run():
         parser.print_help()
         sys.exit(1)
         
-    process_files(args[0],options)
+    idxData,filehash = read_tag_files(args[0],options)
+    process_files(idxData,filehash,options)
     
 if __name__ == "__main__":
     run() 
