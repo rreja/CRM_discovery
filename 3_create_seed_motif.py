@@ -5,10 +5,15 @@ from itertools import izip, cycle, tee
 
 def process_files(idxData,filehash,options):
     # The main loop to create "n" seed motifs
-    for i in range(1,options.nseed):
+    outfile = os.path.join(os.path.dirname(options.distFile),"seed_motif_profiles.txt")
+    out = open(outfile,"w")
+    for i in range(options.nseed):
         Dmatx = {}
         Omatx = {}
         count = 0
+        highestScore = 0
+        avgprofile = []
+        seedKey = ""
         randList = generate_random_numbers(options.sample,options.max)
         #print randList
         # First reading the distance matrix file and sampling 100 rows.
@@ -38,7 +43,7 @@ def process_files(idxData,filehash,options):
                 continue
             if count2 > max(randList):
                 break
-        # Now for each of the 100 sampled rows, find the top 20 distances and their corresponding offsets.    
+        # Now for each of the 100 sampled rows, find the top 20 distances and their corresponding offsets.
         for key,val in Dmatx.items():
             #print key
             sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=False)
@@ -49,23 +54,64 @@ def process_files(idxData,filehash,options):
             encWindows = find_most_enriched_window(offsets)
             # iterate through all the enriched windows and create average profile
             if not encWindows == 0:
-                # Binned vectors corresponding to all the enriched windows
+                ##Binned vectors corresponding to all the enriched windows
                 allVectors = create_data_vectors(encWindows,idxData,filehash,options)
                 meanVector = get_mean(allVectors,len(allVectors.keys()))
-                print meanVector
+                #print meanVector
+                ## Get a standard deviation vector for each bin.
                 std  = get_std(allVectors,meanVector,len(allVectors.keys()))
-                print len(allVectors.keys()),std
-                sys.exit(1)
+                ## Using the mean and std find out the seed score.
+                seedscore = get_seed_score(meanVector,std,options)
+                # Sorting in the loop to find out the best seed score and the corresponding average profile.
+                if highestScore > seedscore:
+                    continue
+                else:
+                    highestScore = seedscore
+                    avgprofile = meanVector
+                    seedKey = key
             else:
                 continue
-            sys.exit(1)
             ## Run this command from CRM_discovey folder: time python 3_create_seed_motif.py -m 10 -n 3 -o testdata/output/tmpoffset.txt -d testdata/output/tmpdist.txt ../tags/
-            
+        ## Write the average seed profiles to a file.
+        line = seedKey
+        for z in avgprofile:
+            line = line+"\t"+str(z)
+        out.write(line+"\n")
+        #print highestScore
+        #print avgprofile
+        #sys.exit(1)
+        
+
+def get_seed_score(mean,std,options):
+    # First find out how many bins for each factor to consider.
+    # len(mean) represents the total bins present.
+    windows_per_factor = options.windowLength/options.bins
+    half_window = windows_per_factor/2
+    seed_score = 0
+    for i in range(0,len(mean),windows_per_factor):
+        list1 = sorted(mean[i:(i+windows_per_factor)],reverse=True)
+        list2 = std[i:(i+windows_per_factor)]
+        seed_score = seed_score + seed_score_calculation(list1,list2,half_window,windows_per_factor)
+    return(seed_score)
     
-        sys.exit(1)
-        
-        
-           
+def seed_score_calculation(mean,std,half_window,full_window):
+    first_half = 0
+    second_half = 0
+    sum_std = 0
+    seedscore = 0
+    for j in range(0,half_window):
+        first_half = first_half +mean[j]
+        sum_std = sum_std + std[j]
+    for k in range(half_window,full_window):
+        second_half = second_half + mean[k]
+        sum_std = sum_std + std[k]
+    std_per_factor = float(sum_std)/full_window
+    seedscore = float(abs(first_half) - abs(second_half))/std_per_factor
+    #print mean
+    #print first_half,second_half,std_per_factor,seedscore
+    #sys.exit(1)
+    return(seedscore)
+    
 def create_data_vectors(encwindows,idxdata,filehash,options):
     taglist = []
     allData = {}
@@ -169,17 +215,24 @@ def get_mean(dicti,n):
             for j in range(len(v)):
                 summed_list[j] = summed_list[j] + v[j]
         count = count + 1
-    newList = [float(x)/n for x in summed_list]
+    # Adding psudocount of 0.5 to the mean
+    newList = [(float(x) + 0.5)/(n+1) for x in summed_list]
     return(newList)
 
 def get_std(dicti,meanList,n):
     sum_of_squares = [0]*len(meanList)
+    tmpnewList = []
     for k,v in dicti.items():
         for m in range(len(meanList)):
             sum_of_squares[m] = sum_of_squares[m] + ((v[m] - meanList[m])*(v[m] - meanList[m]))
-    tmpnewList = [float(x)/(n-1) for x in sum_of_squares]
-    # Taking sqrt and adding a constant of 0.5 in case this becomes zero.
-    newList = [(x**0.5)+0.5 for x in tmpnewList]
+    for i in range(len(meanList)):
+        ##Adding psudo-count of 0.5 to sigma.
+        tmpnewList.append((sum_of_squares[i] + ((0.5-meanList[i])**2))/n)
+    
+    ##tmpnewList2 = [float(x)/(n-1) for x in sum_of_squares]
+    ##newList2 = [(x**0.5) for x in tmpnewList2]
+    ##print newList2
+    newList = [(x**0.5) for x in tmpnewList]
     return(newList)
                 
 def bindata(taglist,options):
