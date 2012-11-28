@@ -44,7 +44,8 @@ def process_files(idxData,filehash,options):
             sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=False)
             ## Getting offset for the same key.
             ## Taking top 100 closest loci and looking which "key" window was found overlapping the most.
-            offsets = get_offsets(Omatx[key],sorted_val[:100]) # Change the number here to change the 'top x' selection.
+            print "change the top 2 selection to 100 once you are donw debugging"
+            offsets = get_offsets(Omatx[key],sorted_val[:2]) # Change the number here to change the 'top x' selection.
             # Get all the enriched windows or continue with the loop if you do not file a row that has a window represented atleast 20 times.
             encWindows = find_most_enriched_window(offsets)
             # iterate through all the enriched windows and create average profile
@@ -52,13 +53,13 @@ def process_files(idxData,filehash,options):
                 # Binned vectors corresponding to all the enriched windows
                 allVectors = create_data_vectors(encWindows,idxData,filehash,options)
                 meanVector = get_mean(allVectors,len(allVectors.keys()))
-                std  = get_std(allVectors,meanVector)
-                print std
+                std  = get_std(allVectors,meanVector,len(allVectors.keys()))
+                #print len(allVectors.keys()),std
                 sys.exit(1)
             else:
                 continue
             sys.exit(1)
-            ## Run this command from CRM_discovey folder: python 3_create_seed_motif.py -m 10 -n 7 -o testdata/output/tmpoffset.txt testdata/output/tmpdist.txt
+            ## Run this command from CRM_discovey folder: time python 3_create_seed_motif.py -m 10 -n 3 -o testdata/output/tmpoffset.txt -d testdata/output/tmpdist.txt ../tags/
             
     
         sys.exit(1)
@@ -164,29 +165,28 @@ def get_mean(dicti,n):
         if count == 0:
             summed_list = v
         else:
-            for j in range(0,len(v)):
+            for j in range(len(v)):
                 summed_list[j] = summed_list[j] + v[j]
         count = count + 1
     newList = [float(x)/n for x in summed_list]
     return(newList)
 
-def get_std(dicti,meanList):
+def get_std(dicti,meanList,n):
     count = 0
     sum_of_squares = []
     for k,v in dicti.items():
         if count == 0:
-            for j in range(len(meanList)):
-                sum_of_squares[j] = (v[j] - meanList[j])*(v[j] - meanList[j])
-        else:
+            for j in range(len(meanList)):    
+                sum_of_squares.append((v[j] - meanList[j])**2)
+               
+        else:    
             for m in range(len(meanList)):
                 sum_of_squares[m] = sum_of_squares[m] + (v[m] - meanList[m])**2
         count = count + 1
     tmpnewList = [float(x)/(n-1) for x in sum_of_squares]
-    newList = [sqrt(x) for x in tmpnewList]
+    newList = [x**0.5 for x in tmpnewList]
     return(newList)
                 
-            
-
 def bindata(taglist,options):
     bintaglist = []
     summation = 0
