@@ -44,8 +44,7 @@ def process_files(idxData,filehash,options):
             sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=False)
             ## Getting offset for the same key.
             ## Taking top 100 closest loci and looking which "key" window was found overlapping the most.
-            print "change the top 2 selection to 100 once you are donw debugging"
-            offsets = get_offsets(Omatx[key],sorted_val[:2]) # Change the number here to change the 'top x' selection.
+            offsets = get_offsets(Omatx[key],sorted_val[:100]) # Change the number here to change the 'top x' selection.
             # Get all the enriched windows or continue with the loop if you do not file a row that has a window represented atleast 20 times.
             encWindows = find_most_enriched_window(offsets)
             # iterate through all the enriched windows and create average profile
@@ -53,8 +52,9 @@ def process_files(idxData,filehash,options):
                 # Binned vectors corresponding to all the enriched windows
                 allVectors = create_data_vectors(encWindows,idxData,filehash,options)
                 meanVector = get_mean(allVectors,len(allVectors.keys()))
+                print meanVector
                 std  = get_std(allVectors,meanVector,len(allVectors.keys()))
-                #print len(allVectors.keys()),std
+                print len(allVectors.keys()),std
                 sys.exit(1)
             else:
                 continue
@@ -123,6 +123,7 @@ def find_most_enriched_window(offsets):
             returndict[k] = v
     # So return the dictionary when you find atleast 20 enriched windows among 100.
     if len(returndict.keys()) < 20:
+    #if len(returndict.keys()) <= 1:
         return(0)
     else:
         return(returndict)
@@ -172,19 +173,13 @@ def get_mean(dicti,n):
     return(newList)
 
 def get_std(dicti,meanList,n):
-    count = 0
-    sum_of_squares = []
+    sum_of_squares = [0]*len(meanList)
     for k,v in dicti.items():
-        if count == 0:
-            for j in range(len(meanList)):    
-                sum_of_squares.append((v[j] - meanList[j])**2)
-               
-        else:    
-            for m in range(len(meanList)):
-                sum_of_squares[m] = sum_of_squares[m] + (v[m] - meanList[m])**2
-        count = count + 1
+        for m in range(len(meanList)):
+            sum_of_squares[m] = sum_of_squares[m] + ((v[m] - meanList[m])*(v[m] - meanList[m]))
     tmpnewList = [float(x)/(n-1) for x in sum_of_squares]
-    newList = [x**0.5 for x in tmpnewList]
+    # Taking sqrt and adding a constant of 0.5 in case this becomes zero.
+    newList = [(x**0.5)+0.5 for x in tmpnewList]
     return(newList)
                 
 def bindata(taglist,options):
