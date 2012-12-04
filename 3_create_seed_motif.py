@@ -1,6 +1,7 @@
 import sys, os, operator, random, time
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
+from search_seed_in_enriched_loci import seed_lookup
 
 
 def process_files(idxData,filehash,options):
@@ -8,11 +9,13 @@ def process_files(idxData,filehash,options):
     outfile = os.path.join(os.path.dirname(options.distFile),"seed_motif_profiles.txt")
     out = open(outfile,"w")
     for i in range(options.nseed):
+        print "Running the "+str(i+1)+" round"
         Dmatx = {}
         Omatx = {}
         count = 0
         highestScore = 0
         avgprofile = []
+        standardDeviation = []
         seedKey = ""
         randList = generate_random_numbers(options.sample,options.max)
         #print randList
@@ -68,18 +71,24 @@ def process_files(idxData,filehash,options):
                 else:
                     highestScore = seedscore
                     avgprofile = meanVector
+                    standardDeviation = std
                     seedKey = key
             else:
                 continue
             ## Run this command from CRM_discovey folder: time python 3_create_seed_motif.py -m 10 -n 3 -o testdata/output/tmpoffset.txt -d testdata/output/tmpdist.txt ../tags/
         ## Write the average seed profiles to a file.
-        line = seedKey
-        for z in avgprofile:
-            line = line+"\t"+str(z)
-        out.write(line+"\n")
-        #print highestScore
-        #print avgprofile
-        #sys.exit(1)
+        # Instead of giving all regions for seed lookup, we can give the top 1000/5000 regions from the same row that created the seed motif.
+        lookup_regions = sorted(Dmatx[seedKey].iteritems(), key=operator.itemgetter(1),reverse=False)
+        # Function imported from another script.
+        seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:5000])
+        # Remove this once the script is complete.
+        sys.exit(1)
+        #Commenting out the section below since we may not be writing the seeds to file anymore.
+        #line = seedKey
+        #for z in avgprofile:
+        #    line = line+"\t"+str(z)
+        #out.write(line+"\n")
+        #out.flush()
         
 
 def get_seed_score(mean,std,options):
@@ -114,6 +123,7 @@ def seed_score_calculation(mean,std,half_window,full_window):
     
 def create_data_vectors(encwindows,idxdata,filehash,options):
     taglist = []
+    finallist = []
     allData = {}
     #iterate over all enriched windows and get their tag.
     for k,v in encwindows.items():
@@ -128,9 +138,15 @@ def create_data_vectors(encwindows,idxdata,filehash,options):
                 if idx in idxdata:
                     taglist.append(idxdata[idx])
                 else:
-                    taglist.append(0)       
-        allData[k] = bindata(taglist,options)
-        taglist = []
+                    taglist.append(0)
+            taglist = bindata(taglist,options)
+            finallist = finallist+taglist
+            taglist = []
+        ##allData[k] = bindata(taglist,options)
+        ##taglist = []
+        allData[k] = finallist
+        finallist = []
+        
     return(allData)   
     
 def read_tag_files(idxdir,options):
@@ -149,6 +165,9 @@ def read_tag_files(idxdir,options):
                 idxData[str(count)+":"+chrom+":"+start] = int(ttag)
             filehash[count] = fname
             count = count+1
+    #for a,b in filehash.items():
+    #    print a,b
+    #sys.exit(1)
     return(idxData,filehash)            
     
 def find_most_enriched_window(offsets):
@@ -291,6 +310,7 @@ def run():
         
     idxData,filehash = read_tag_files(args[0],options)
     process_files(idxData,filehash,options)
+    print "All iterations completed. Check your results."
     
 if __name__ == "__main__":
     run() 
