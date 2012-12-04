@@ -4,7 +4,7 @@ from itertools import izip, cycle, tee
 from search_seed_in_enriched_loci import seed_lookup
 
 
-def process_files(idxData,filehash,options):
+def process_files(idxData,filehash,options,bmean,bstd):
     # The main loop to create "n" seed motifs
     outfile = os.path.join(os.path.dirname(options.distFile),"seed_motif_profiles.txt")
     out = open(outfile,"w")
@@ -75,12 +75,12 @@ def process_files(idxData,filehash,options):
                     seedKey = key
             else:
                 continue
-            ## Run this command from CRM_discovey folder: time python 3_create_seed_motif.py -m 10 -n 3 -o testdata/output/tmpoffset.txt -d testdata/output/tmpdist.txt ../tags/
+            ## Run this command from CRM_discovey folder:  time python 3_create_seed_motif.py -m 10 -n 3 -o testdata/output/tmpoffset.txt -d testdata/output/tmpdist.txt ../tags/ -e testdata/output/tmp.enriched.gff 
         ## Write the average seed profiles to a file.
         # Instead of giving all regions for seed lookup, we can give the top 1000/5000 regions from the same row that created the seed motif.
         lookup_regions = sorted(Dmatx[seedKey].iteritems(), key=operator.itemgetter(1),reverse=False)
         # Function imported from another script.
-        seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:5000])
+        seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:5000],bmean,bstd)
         # Remove this once the script is complete.
         sys.exit(1)
         #Commenting out the section below since we may not be writing the seeds to file anymore.
@@ -269,7 +269,51 @@ def pairwise(seq):
     a, b = tee(seq)
     next(b)
     return izip(a, b)
-    
+
+def calculate_background_mean_std(idxData,filehash,options):
+    input = open(options.enrFile,"rt")
+    sum_total = 0
+    allData = {}
+    bmean  = {}
+    taglist = []
+    bstd = {}
+    mean = []
+    std = []
+    bins_per_factor = options.windowLength/options.bins
+    # Initialization
+    for k,v in filehash.items():
+        allData[k] = []
+    for line in input:
+        if line.startswith("chrom") or line.startswith("#"):
+            continue;
+        chrom,junk,junk,start,end,junk,junk,junk,junk = line.rstrip().split("\t")
+        # Iterate over all tag/tab files one by one
+        for key,val in filehash.items():
+            for i in range(int(start),int(end)):
+                # idx if formed by fileNo:chr+start, where filenNo is stored in filehash. Each entry in filehash corresponds to one tab/tag file.
+                idx = str(key)+":"+chrom+":"+str(i)
+                if idx in idxData:
+                    taglist.append(idxData[idx])
+                else:
+                    taglist.append(0)
+            taglist = bindata(taglist,options)
+            allData[key] = allData[key] + taglist
+            taglist = []
+    for k,v in allData.items():
+        ss = 0
+        length = len(v)
+        summation = sum(v)
+        bmean[k] = float(summation)/length
+        for val in v:
+            ss = ss + ((val - bmean[k])*(val - bmean[k]))
+        bstd[k]  =  (float(ss)/(length-1))**(0.5)
+        #print bmean[k],bstd[k]
+    for k,v in filehash.items():
+        mean = mean + [bmean[k]]*bins_per_factor
+        std = std + [bstd[k]]*bins_per_factor
+    return(mean, std)
+        
+        
 
 usage = '''
 input_paths may be:
@@ -288,19 +332,21 @@ class CustomHelpFormatter(IndentedHelpFormatter):
 def run():
     parser = OptionParser(usage='%prog [options] input_paths', description=usage, formatter=CustomHelpFormatter())
     parser.add_option('-n', action='store', type='int', dest='sample',default = 100,
-                      help='The number of rows to sample at a time.')
+                      help='[OPTIONAL]: The number of rows to sample at a time.')
+    parser.add_option('-e', action='store', dest='enrFile',
+                      help='[MANDATORY]: The file containing the enriched regions.')
     parser.add_option('-m', action='store', type='int', dest='max',default = 5000,
-                      help='Generate random nummbers between 1 and max.')
+                      help='[OPTIONAL]: Generate random nummbers between 1 and max.')
     parser.add_option('-o', action='store', dest='offFile',
-                      help='File containing the offset matrix')
+                      help='[MANDATORY]: File containing the offset matrix')
     parser.add_option('-d', action='store', dest='distFile',
-                      help='File containing the distance matrix')
+                      help='[MANDATORY]: File containing the distance matrix')
     parser.add_option('-s', action='store', type='int', dest='nseed',default = 50,
-                      help='The number of seed motif to generate.')
+                      help='[OPTIONAL]: The number of seed motif to generate.')
     parser.add_option('-w', action='store', type='int', dest='windowLength',default=100,
-                      help='Size of the moving window.Should be same as the one used in previous step.Default=100')
+                      help='[OPTIONAL]: Size of the moving window.Should be same as the one used in previous step.Default=100')
     parser.add_option('-b', action='store', type='int', dest='bins',default=5,
-                      help='Sub bin within a window. Should be same as the one used in previous step. This will also be used as a sliding distance.Default=5')
+                      help='[OPTIONAL]: Sub bin within a window. Should be same as the one used in previous step.Default=5')
     (options, args) = parser.parse_args()
     
     # Check if all the required arguments are provided, else exit     
@@ -309,7 +355,8 @@ def run():
         sys.exit(1)
         
     idxData,filehash = read_tag_files(args[0],options)
-    process_files(idxData,filehash,options)
+    bmean,bstd = calculate_background_mean_std(idxData,filehash,options)
+    process_files(idxData,filehash,options,bmean,bstd)
     print "All iterations completed. Check your results."
     
 if __name__ == "__main__":

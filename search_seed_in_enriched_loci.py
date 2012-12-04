@@ -5,7 +5,7 @@ from compute_euclidean_distance import get_fullvectors
 
 
 
-def seed_lookup(idxData,filehash,options,mean,std,lookup_regions):
+def seed_lookup(idxData,filehash,options,mean,std,lookup_regions,bmean,bstd):
     # Go through 5 iterations of seed lookup
     for i in range(5):
         for locus in lookup_regions:
