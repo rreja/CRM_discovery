@@ -80,7 +80,8 @@ def process_files(idxData,filehash,options,bmean,bstd):
         # Instead of giving all regions for seed lookup, we can give the top 1000/5000 regions from the same row that created the seed motif.
         lookup_regions = sorted(Dmatx[seedKey].iteritems(), key=operator.itemgetter(1),reverse=False)
         # Function imported from another script.
-        seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:5000],bmean,bstd)
+        print seedKey
+        seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:500],bmean,bstd)
         # Remove this once the script is complete.
         sys.exit(1)
         #Commenting out the section below since we may not be writing the seeds to file anymore.
