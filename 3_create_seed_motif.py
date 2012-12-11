@@ -6,13 +6,15 @@ from search_seed_in_enriched_loci import seed_lookup
 
 def process_files(idxData,filehash,options,bmean,bstd):
     # The main loop to create "n" seed motifs
-    outfile = os.path.join(os.path.dirname(options.distFile),"seed_motif_profiles.txt")
+    outfile = os.path.join(os.path.dirname(options.distFile),"CRMs_found.txt")
     out = open(outfile,"w")
+    excluded_regions = []
     for i in range(options.nseed):
-        print "Running the "+str(i+1)+" round"
+        print "Considering the "+str(i+1)+" seed motif"
         Dmatx = {}
         Omatx = {}
         count = 0
+        result_to_print = {}
         highestScore = 0
         avgprofile = []
         standardDeviation = []
@@ -48,49 +50,52 @@ def process_files(idxData,filehash,options,bmean,bstd):
                 break
         # Now for each of the 100 sampled rows, find the top 20 distances and their corresponding offsets.
         for key,val in Dmatx.items():
-            #print key
-            sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=False)
-            ## Getting offset for the same key.
-            ## Taking top 100 closest loci and looking which "key" window was found overlapping the most.
-            offsets = get_offsets(Omatx[key],sorted_val[:100]) # Change the number here to change the 'top x' selection.
-            # Get all the enriched windows or continue with the loop if you do not file a row that has a window represented atleast 20 times.
-            encWindows = find_most_enriched_window(offsets)
-            # iterate through all the enriched windows and create average profile
-            if not encWindows == 0:
-                ##Binned vectors corresponding to all the enriched windows
-                allVectors = create_data_vectors(encWindows,idxData,filehash,options)
-                meanVector = get_mean(allVectors,len(allVectors.keys()))
-                #print meanVector
-                ## Get a standard deviation vector for each bin.
-                std  = get_std(allVectors,meanVector,len(allVectors.keys()))
-                ## Using the mean and std find out the seed score.
-                seedscore = get_seed_score(meanVector,std,options)
-                # Sorting in the loop to find out the best seed score and the corresponding average profile.
-                if highestScore > seedscore:
-                    continue
-                else:
-                    highestScore = seedscore
-                    avgprofile = meanVector
-                    standardDeviation = std
-                    seedKey = key
-            else:
+            if key in excluded_regions:
+                # Skip these regions if you have already considered them.
+                print "Region already considered"
                 continue
+            else:
+                #print key
+                sorted_val = sorted(val.iteritems(), key=operator.itemgetter(1),reverse=False)
+                ## Getting offset for the same key.
+                ## Taking top 100 closest loci and looking which "key" window was found overlapping the most.
+                offsets = get_offsets(Omatx[key],sorted_val[:100]) # Change the number here to change the 'top x' selection.
+                # Get all the enriched windows or continue with the loop if you do not file a row that has a window represented atleast 20 times.
+                encWindows = find_most_enriched_window(offsets)
+                # iterate through all the enriched windows and create average profile
+                if not encWindows == 0:
+                    ##Binned vectors corresponding to all the enriched windows
+                    allVectors = create_data_vectors(encWindows,idxData,filehash,options)
+                    meanVector = get_mean(allVectors,len(allVectors.keys()))
+                    #print meanVector
+                    ## Get a standard deviation vector for each bin.
+                    std  = get_std(allVectors,meanVector,len(allVectors.keys()))
+                    ## Using the mean and std find out the seed score.
+                    seedscore = get_seed_score(meanVector,std,options)
+                    # Sorting in the loop to find out the best seed score and the corresponding average profile.
+                    if highestScore > seedscore:
+                        continue
+                    else:
+                        highestScore = seedscore
+                        avgprofile = meanVector
+                        standardDeviation = std
+                        seedKey = key
+                else:
+                    continue
             ## Run this command from CRM_discovey folder:  time python 3_create_seed_motif.py -m 10 -n 3 -o testdata/output/tmpoffset.txt -d testdata/output/tmpdist.txt ../tags/ -e testdata/output/tmp.enriched.gff 
         ## Write the average seed profiles to a file.
         # Instead of giving all regions for seed lookup, we can give the top 1000/5000 regions from the same row that created the seed motif.
         lookup_regions = sorted(Dmatx[seedKey].iteritems(), key=operator.itemgetter(1),reverse=False)
         # Function imported from another script.
         print seedKey
-        seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:500],bmean,bstd)
+        resample,excluded_regions,result_to_print,avgprofile = seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:5000],bmean,bstd)
         # Remove this once the script is complete.
-        sys.exit(1)
-        #Commenting out the section below since we may not be writing the seeds to file anymore.
-        #line = seedKey
-        #for z in avgprofile:
-        #    line = line+"\t"+str(z)
-        #out.write(line+"\n")
-        #out.flush()
-        
+        if resample == 1:
+            continue
+        else:
+            out.write("##CRM")
+            for n,m in result_to_print.items():
+                out.write(str(n)+"\t"+str(m)+"\n")
 
 def get_seed_score(mean,std,options):
     # First find out how many bins for each factor to consider.
@@ -342,7 +347,7 @@ def run():
                       help='[MANDATORY]: File containing the offset matrix')
     parser.add_option('-d', action='store', dest='distFile',
                       help='[MANDATORY]: File containing the distance matrix')
-    parser.add_option('-s', action='store', type='int', dest='nseed',default = 50,
+    parser.add_option('-s', action='store', type='int', dest='nseed',default = 20,
                       help='[OPTIONAL]: The number of seed motif to generate.')
     parser.add_option('-w', action='store', type='int', dest='windowLength',default=100,
                       help='[OPTIONAL]: Size of the moving window.Should be same as the one used in previous step.Default=100')

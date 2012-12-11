@@ -1,44 +1,164 @@
-import sys, os, operator
+import sys, os, operator, time
 from optparse import OptionParser , IndentedHelpFormatter
 from itertools import izip, cycle, tee
 from compute_euclidean_distance import get_fullvectors
 from math import exp, log
+from multiprocessing import Process,Queue
+import multiprocessing as mp
+
 
 
 
 def seed_lookup(idxData,filehash,options,mean,std,lookup_regions,bmean,bstd):
     # Go through 5 iterations of seed lookup
-    for i in range(5):
-        # Store in this dict one window per locus that had the highest liklihood. the key will be chr:start:end:offset, value will be the liklihood score.
-        all_aligned_windows = {}
-        # Store in this dict the value vector for the highest scoring window.
-        all_aligned_windows_val = {}
+    # excluded list includes all regions we do not want to consider either they have no motif or their motif was already found.
+    excluded = []
+    resample = 0
+    # Output_offsets will include all the locus and their offset that had motif. This will be printed in a file to create cluster plot.
+    output_offsets = {}
+    for iteration in range(5):
+        print "Round number: "+str(iteration+1)
+        #print mean
+        out_q1 = Queue()
+        out_q2 = Queue()
+        out_q3 = Queue()
+        all_window_results = {}
+        all_window_vals = {}
+        all_window_offsets = {}
+        count = 0
+        num = (mp.cpu_count()) - 2
+        print "Using "+str(num)+" processors in your computer."
+        jobs = []
+        linecount = 0
         for locus in lookup_regions:
-            # Get all possible 100bp windows and the corresponding tags in those window. Store in vec1 which is dictionary, keys are window-offset, values is a list of 220 bins.
-            vec1 = get_fullvectors(locus[0],idxData,filehash,options)
-            # The higest score for liklihood can never be negative. Hence initializing it to negative value.
-            highestScore = -1
-            highest_match_offset = 0
-            highest_match_val = []
-            for k,v in vec1.items():
-                L = calculate_likelihood(mean,std,bmean,bstd,v,options)
-                if highestScore > L:
-                    continue
-                else:
-                    highestScore = L
-                    highest_match_offset = k
-                    highest_match_val = v
-            all_aligned_windows[locus[0]+":"+str(highest_match_offset)] = L
-            all_aligned_windows_val[locus[0]+":"+str(highest_match_offset)] = highest_match_val
-        for key, val in all_aligned_windows.items():
-            if val > 0:
-                print key,val
-        sys.exit(1)
+            if locus[0] in excluded:
+                continue
+            else:
+                vec1 = get_fullvectors(locus[0],idxData,filehash,options)
+                p = Process(target=run_process_in_parallel,args=(vec1,locus[0],options,mean,std,bmean,bstd,out_q1,out_q2,out_q3))
+                jobs.append(p)
+                p.start()
+                count = count + 1
+                if count == num:
+                    for i in range(num):
+                        all_window_results.update(out_q1.get())
+                        all_window_vals.update(out_q2.get())
+                        all_window_offsets.update(out_q3.get())
+                    for p in jobs:
+                        p.join()
+                    count = 0
+                
+        # Accouting for the jobs that were running but the loop had to exit.
+        for j in range(count):
+            all_window_results.update(out_q1.get())
+            all_window_vals.update(out_q2.get())
+            all_window_offsets.update(out_q3.get())
+        for p in jobs:
+            p.join()
             
+        all_window_vals = get_top_n(all_window_results,all_window_vals,iteration)
             
+        if iteration == 0:
+            if len(all_window_vals.keys()) <= 30:
+                print "Not a good seed. Less than 30 matches found."
+                # Exclude this locus from the further analysis.
+                excluded.append(locus[0])
+                # variable resample to send a signal to 3_seed...py script to ignore the current seed motif and resample the next one.
+                resample = 1
+                # Also exclude all the locus that matched with a higher likelihood with this locus.
+                for k,v in all_window_vals.items():
+                    excluded.append(k)
+                break
+            
+        
                 
+        if len(all_window_vals.keys()) == 0:
+            break
+        else:
+            mean,std,output_offsets,excluded = get_mean_and_std(all_window_vals,all_window_offsets,excluded,output_offsets)
+        
+
+    return(resample,excluded,output_offsets,mean)
+    
+def get_mean_and_std(dicti,offsets_dicti,excluded,output_offsets):
+    summed_list = []
+    count = 0
+    #output_offsets = {}
+    n = len(dicti.keys())
+    print "Locus with high Likelihood= "+str(n)
+    # Calculating mean.
+    for k,v in dicti.items():
+        # updating offsets that will be printed.
+        output_offsets[k] = offsets_dicti[k]
+        # updating excluded regions.
+        excluded.append(k)
+        if count == 0:
+            summed_list = v
+        else:
+            for j in range(len(v)):
+                summed_list[j] = summed_list[j] + v[j]
+        count = count + 1
+    # Adding psudocount of 0.5 to the mean
+    newmeanList = [(float(x) + 0.5)/(n+1) for x in summed_list]
+    # Calculatind std here.
+    sum_of_squares = [0]*len(newmeanList)
+    tmpnewList = []
+    for k,v in dicti.items():
+        for m in range(len(newmeanList)):
+            sum_of_squares[m] = sum_of_squares[m] + ((v[m] - newmeanList[m])*(v[m] - newmeanList[m]))
+    for i in range(len(newmeanList)):
+        ##Adding psudo-count of 0.5 to sigma.
+        tmpnewList.append((sum_of_squares[i] + ((0.5-newmeanList[i])**2))/n)
+    
+    newstdList = [(x**0.5) for x in tmpnewList]
+    # Returning all the computed values.
+    return(newmeanList,newstdList,output_offsets,excluded)
+            
+def get_top_n(all_window_results,all_windows_val,iteration):
+    # tmpdict will store dict with keys as regions and values as likelihood score.
+    tmpdict = {}
+    sorted_result =  sorted(all_window_results.iteritems(), key=operator.itemgetter(1),reverse=True)
+    # take top 50, for the remaining take whatever has L > 0.
+    if iteration == 0:
+        for i in sorted_result[:50]:
+            print all_window_results[i[0]]
+            sys.exit(1)
+            if all_window_results[i[0]] > 0:
+                tmpdict[i[0]] = all_windows_val[i[0]]
+    else:
+        for i in sorted_result:
+            if all_window_results[i[0]] > 0:
+                tmpdict[i[0]] = all_windows_val[i[0]]
+    return(tmpdict)
+        
                 
-                
+def run_process_in_parallel(vec1,locus,options,mean,std,bmean,bstd,out_q1,out_q2,out_q3):
+    # Store in this dict one window per locus that had the highest liklihood. the key will be chr:start:end:offset, value will be the liklihood score.
+    all_aligned_windows = {}
+    # Store in this dict the value vector for the highest scoring window.
+    all_aligned_windows_val = {}
+    # Storing all the aligned offsets in the dictionary, with key as locus and value as offset.
+    all_aligned_offsets = {}
+    # The higest score for liklihood can never be negative. Hence initializing it to negative value.
+    highestScore = -1
+    highest_match_offset = 0
+    highest_match_val = []
+    for k,v in vec1.items():
+        L = calculate_likelihood(mean,std,bmean,bstd,v,options)
+        if highestScore > L:
+            continue
+        else:
+            highestScore = L
+            highest_match_offset = k
+            highest_match_val = v
+            
+    all_aligned_windows[locus] = L
+    all_aligned_windows_val[locus] = highest_match_val
+    all_aligned_offsets[locus] = highest_match_offset
+    
+    out_q1.put(all_aligned_windows)
+    out_q2.put(all_aligned_windows_val)
+    out_q3.put(all_aligned_offsets)
                 
     
 def calculate_likelihood(mean,std,bmean,bstd,v,options):
@@ -64,13 +184,6 @@ def calculate_likelihood(mean,std,bmean,bstd,v,options):
         except ValueError:
             sum_L = 0
             break
-        #if(likelihood > 0.00001):
-        #    #sum_L = sum_L + log(round(((M*pa)/((B*p2a)+(A*p2b))),4))
-        #    sum_L = sum_L + log(likelihood)
-        #else:
-        #    sum_L = 0
-        #    break
-    #print likelihood
     return(sum_L)
         
 def get_fullvectors(key,idxData,filehash,options):
