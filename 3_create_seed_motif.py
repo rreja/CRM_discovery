@@ -6,9 +6,10 @@ from search_seed_in_enriched_loci import seed_lookup
 
 def process_files(idxData,filehash,options,bmean,bstd):
     # The main loop to create "n" seed motifs
-    outfile = os.path.join(os.path.dirname(options.distFile),"CRMs_found.txt")
-    out = open(outfile,"w")
+    output_folder = os.path.join(os.path.dirname(options.distFile),"CRMS") 
+    if not os.path.exists(output_folder): os.makedirs(output_folder)
     excluded_regions = []
+    crm_count = 0
     for i in range(options.nseed):
         print "Considering the "+str(i+1)+" seed motif"
         Dmatx = {}
@@ -93,10 +94,13 @@ def process_files(idxData,filehash,options,bmean,bstd):
         if resample == 1:
             continue
         else:
-            out.write("##CRM")
+            outfile = os.path.join(output_folder,"CRM_1"+str(crm_count)+".txt")
+            out = open(outfile,"w")
+            #out.write("##CRM")
             for n,m in result_to_print.items():
                 out.write(str(n)+"\t"+str(m)+"\n")
             out.flush()
+            crm_count = crm_count+1
 
 def get_seed_score(mean,std,options):
     # First find out how many bins for each factor to consider.
