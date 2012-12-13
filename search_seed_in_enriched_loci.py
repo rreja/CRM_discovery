@@ -61,10 +61,10 @@ def seed_lookup(idxData,filehash,options,mean,std,lookup_regions,bmean,bstd):
             
         if iteration == 0:
             if len(all_window_vals.keys()) <= 30:
-                print "Not a good seed. Less than 30 matches found."
-                for a,b in all_window_vals.items():
-                    print a,all_window_results[a]
-                sys.exit(1)
+                print locus[0]+" Not a good seed. Less than 30 matches found."
+                #for a,b in all_window_vals.items():
+                #    print a,all_window_results[a]
+                #sys.exit(1)
                 # Exclude this locus from the further analysis.
                 excluded.append(locus[0])
                 # variable resample to send a signal to 3_seed...py script to ignore the current seed motif and resample the next one.

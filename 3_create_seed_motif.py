@@ -96,6 +96,7 @@ def process_files(idxData,filehash,options,bmean,bstd):
             out.write("##CRM")
             for n,m in result_to_print.items():
                 out.write(str(n)+"\t"+str(m)+"\n")
+            out.flush()
 
 def get_seed_score(mean,std,options):
     # First find out how many bins for each factor to consider.
