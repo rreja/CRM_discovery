@@ -55,7 +55,7 @@ def seed_lookup(idxData,filehash,options,mean,std,lookup_regions,bmean,bstd):
             all_window_offsets.update(out_q3.get())
         for p in jobs:
             p.join()
-            
+        
         all_window_vals = get_top_n(all_window_results,all_window_vals,iteration)
             
         if iteration == 0:
@@ -69,8 +69,6 @@ def seed_lookup(idxData,filehash,options,mean,std,lookup_regions,bmean,bstd):
                 for k,v in all_window_vals.items():
                     excluded.append(k)
                 break
-            
-        
                 
         if len(all_window_vals.keys()) == 0:
             break
@@ -121,8 +119,6 @@ def get_top_n(all_window_results,all_windows_val,iteration):
     # take top 50, for the remaining take whatever has L > 0.
     if iteration == 0:
         for i in sorted_result[:50]:
-            print all_window_results[i[0]]
-            sys.exit(1)
             if all_window_results[i[0]] > 0:
                 tmpdict[i[0]] = all_windows_val[i[0]]
     else:
@@ -139,7 +135,7 @@ def run_process_in_parallel(vec1,locus,options,mean,std,bmean,bstd,out_q1,out_q2
     all_aligned_windows_val = {}
     # Storing all the aligned offsets in the dictionary, with key as locus and value as offset.
     all_aligned_offsets = {}
-    # The higest score for liklihood can never be negative. Hence initializing it to negative value.
+    # Initializing highest score.
     highestScore = -1
     highest_match_offset = 0
     highest_match_val = []
@@ -156,6 +152,7 @@ def run_process_in_parallel(vec1,locus,options,mean,std,bmean,bstd,out_q1,out_q2
     all_aligned_windows_val[locus] = highest_match_val
     all_aligned_offsets[locus] = highest_match_offset
     
+    
     out_q1.put(all_aligned_windows)
     out_q2.put(all_aligned_windows_val)
     out_q3.put(all_aligned_offsets)
@@ -170,20 +167,25 @@ def calculate_likelihood(mean,std,bmean,bstd,v,options):
     likelihood = 0
     sum_L = 0
     for i in range(0,len(v),bins_per_factor):
-        M =1
-        B =1
-        A = 1
-        for j in range(i+20):
+        M = 1
+        B = 1
+        A = 1 
+        for j in range(i,i+20):
             M = M*(exp(-((v[j] - mean[j])**2)/(2*(std[j]**2))))
             B = B*(exp(-((v[j] - bmean[j])**2)/(2*(bstd[j]**2))))
             A = A*(exp(-((1.75 - 0)**2)/(2*(1**2))))
-        likelihood = ((M*pa)/((B*p2a)+(A*p2b)))
-        # If for atleast one transcription factor, the likelihood is < 1, then reject that window and return 0.
+
         try:
-            sum_L = sum_L + log(round(likelihood,5))
+            NUM = log(M*pa)
         except ValueError:
-            sum_L = 0
-            break
+            NUM = 0
+        try:
+            DEN = log((B*p2a)+(A*p2b))
+        except ValueError:
+            DEN = 0
+            
+        likelihood = NUM - DEN      
+        sum_L = sum_L + likelihood
     return(sum_L)
         
 def get_fullvectors(key,idxData,filehash,options):

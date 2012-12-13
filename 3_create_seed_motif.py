@@ -88,7 +88,7 @@ def process_files(idxData,filehash,options,bmean,bstd):
         lookup_regions = sorted(Dmatx[seedKey].iteritems(), key=operator.itemgetter(1),reverse=False)
         # Function imported from another script.
         print seedKey
-        resample,excluded_regions,result_to_print,avgprofile = seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:5000],bmean,bstd)
+        resample,excluded_regions,result_to_print,avgprofile = seed_lookup(idxData,filehash,options,avgprofile,standardDeviation,lookup_regions[:500],bmean,bstd)
         # Remove this once the script is complete.
         if resample == 1:
             continue
