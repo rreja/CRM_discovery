@@ -6,47 +6,47 @@ import numpy as np
 
 def process_file(options,outdir,hmmdir):
     
-    #order = []
-    #peak_data = defaultdict(list)
-    ## Reading the peak-pair directory
-    #for fname in os.listdir(options.dir):
-    #    if not fname.endswith(".gff"):
-    #        continue
-    #    label = fname.split("_")[0]
-    #    order.append(label)
-    #    in0 = open(os.path.join(options.dir,fname),"rt")
-    #    for line in in0:
-    #        if line.startswith("#") or line.startswith("chrom"):
-    #            continue
-    #        cols = line.rstrip().split("\t")
-    #        peak_data[label+":"+cols[0]].append(cols[3]+":"+cols[4])
-    #    
-    #    in0.close()
-    #
-    #        
-    ## Read the chromosome length file
-    #in0 = open(options.ref,"rt")
-    #for line in in0:
-    #    cols = line.rstrip().split("\t")
-    #    chrom = cols[0]
-    #    start = 1
-    #    end = int(cols[1])
-    #    outfile = os.path.join(outdir,chrom+"_binary.txt")
-    #    out = open(outfile,"w")
-    #    out.write("BY4741\t"+chrom+"\n")
-    #    out.write("\t".join(order)+"\n")
-    #    
-    #    print "Processning chromosome = "+chrom
-    #    for j in range(start,end,options.ilen):
-    #        int_start = j
-    #        int_end = j + options.ilen - 1
-    #        if int_end > end:
-    #            continue
-    #        out.write(get_value(order,peak_data,chrom,int_start,int_end)+"\n")
-    #    
-    #    out.close()
-    #        
-    #print "Completed creating input!"
+    order = []
+    peak_data = defaultdict(list)
+    # Reading the peak-pair directory
+    for fname in os.listdir(options.dir):
+        if not fname.endswith(".gff"):
+            continue
+        label = fname.split("_")[0]
+        order.append(label)
+        in0 = open(os.path.join(options.dir,fname),"rt")
+        for line in in0:
+            if line.startswith("#") or line.startswith("chrom"):
+                continue
+            cols = line.rstrip().split("\t")
+            peak_data[label+":"+cols[0]].append(cols[3]+":"+cols[4])
+        
+        in0.close()
+    
+            
+    # Read the chromosome length file
+    in0 = open(options.ref,"rt")
+    for line in in0:
+        cols = line.rstrip().split("\t")
+        chrom = cols[0]
+        start = 1
+        end = int(cols[1])
+        outfile = os.path.join(outdir,chrom+"_binary.txt")
+        out = open(outfile,"w")
+        out.write("BY4741\t"+chrom+"\n")
+        out.write("\t".join(order)+"\n")
+        
+        print "Processning chromosome = "+chrom
+        for j in range(start,end,options.ilen):
+            int_start = j
+            int_end = j + options.ilen - 1
+            if int_end > end:
+                continue
+            out.write(get_value(order,peak_data,chrom,int_start,int_end)+"\n")
+        
+        out.close()
+            
+    print "Completed creating input!"
 
 
     ## Run ChromHMM
