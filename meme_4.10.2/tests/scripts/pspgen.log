@@ -1,8 +1,0 @@
-*******************************************************************************
-Test psp-gen1 ...
-psp-gen -revcomp -pos psp-gen/one-peak-dna.fasta -neg psp-gen/all-A.fasta 1> results/pspgen1/psp-gen_kGDcy_stdout 2> log
-PASSED!
-*******************************************************************************
-Test psp-gen2 ...
-psp-gen -alpha prot -maxrange -triples -pos psp-gen/one-peak-protein.fasta -neg psp-gen/all-A.fasta 1> results/pspgen2/psp-gen_2LDh7_stdout 2> log
-PASSED!

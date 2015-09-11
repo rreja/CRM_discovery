@@ -1,8 +1,0 @@
-*******************************************************************************
-Test dreme1 ...
-dreme -oc results/dreme -v 1 -noxslt -p Klf1-200-100.s &> log
-PASSED!
-*******************************************************************************
-Test dreme2 ...
-dreme -norc -oc results/dreme -v 1 -noxslt -p Klf1-200-100.s &> log
-PASSED!

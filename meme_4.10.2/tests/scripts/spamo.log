@@ -1,8 +1,0 @@
-*******************************************************************************
-Test spamo1 ...
-spamo -oc results/spamo1 -verbosity 1 -znoxslt -margin 20 -shared 1 spamo/limits.fasta spamo/primary.meme spamo/secondary.meme &> log
-PASSED!
-*******************************************************************************
-Test spamo2 ...
-spamo -oc results/spamo2 -verbosity 1 -znoxslt -margin 20 -shared 1 spamo/random.fasta spamo/primary.meme spamo/secondary.meme &> log
-PASSED!
