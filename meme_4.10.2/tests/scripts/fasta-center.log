@@ -1,0 +1,4 @@
+*******************************************************************************
+Test fasta-center1 ...
+fasta-center -len 100 < Klf1-200.s 1> results/fasta-center1/fasta-center_pTrdH_stdout 2> log
+PASSED!

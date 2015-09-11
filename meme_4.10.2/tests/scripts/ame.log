@@ -1,0 +1,4 @@
+*******************************************************************************
+Test ame1 ...
+ame --oc results/ame1 --silent --verbose 1 --bgformat 0 --control Klf1-200-100-shuffled.s Klf1-200-100.s Jaspar-subset.meme &> log
+PASSED!

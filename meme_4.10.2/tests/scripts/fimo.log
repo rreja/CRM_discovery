@@ -1,0 +1,32 @@
+*******************************************************************************
+Test fimo1 ...
+fimo --text --motif-pseudo 0.01 fimo/MCM1.meme.html fimo/spiked.fasta 1> results/fimo1/fimo_jlPoI_stdout 2> log
+Warning: text mode turns off computation of q-values
+Using motif +1 of width 13.
+Using motif -1 of width 13.
+PASSED!
+*******************************************************************************
+Test fimo2 ...
+fimo --text --motif 2 --motif 3 --thresh 0.01 common/crp0.meme.html motiph/spiked.fasta 1> results/fimo2/fimo_Zu0oQ_stdout 2> log
+Warning: text mode turns off computation of q-values
+Skipping motif +1.
+Skipping motif -1.
+Using motif +2 of width 8.
+Using motif -2 of width 8.
+Using motif +3 of width 11.
+Using motif -3 of width 11.
+PASSED!
+*******************************************************************************
+Test fimo3 ...
+fimo --text --psp fimo/GCN4_YPD.psp --prior-dist fimo/prior.dist.txt fimo/GCN4.meme fimo/GCN4_YPD.fasta 1> results/fimo3/fimo_YRBbN_stdout 2> log
+Warning: text mode turns off computation of q-values
+Using motif +MA0303.1 of width 21.
+Using motif -MA0303.1 of width 21.
+PASSED!
+*******************************************************************************
+Test fimo4 ...
+fimo --text --parse-genomic-coord --psp fimo/GCN4_YPD-genomic.psp --prior-dist fimo/prior.dist.txt fimo/GCN4.meme fimo/GCN4_YPD-genomic.fasta 1> results/fimo4/fimo_u97co_stdout 2> log
+Warning: text mode turns off computation of q-values
+Using motif +MA0303.1 of width 21.
+Using motif -MA0303.1 of width 21.
+PASSED!

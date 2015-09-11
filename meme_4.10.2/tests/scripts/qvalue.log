@@ -1,0 +1,5 @@
+*******************************************************************************
+Test qvalue1 ...
+qvalue --header 1 --append --column 2 --seed 7718 qvalue/uniform.txt 1> results/qvalue1/qvalue_JIl90_stdout 2> log
+Read 1000 values from qvalue/uniform.txt.
+PASSED!

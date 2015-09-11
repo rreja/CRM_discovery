@@ -1,0 +1,51 @@
+#!/usr/bin/perl test_driver
+my @datasets = ('crp0', 'adh');
+if (&is_comprehensive()) {
+  push(@datasets, 'INO_up800', 'farntrans5', 'lipocalin');
+}
+my @models = ('oops', 'zoops', 'tcm');
+my %params = (
+  'crp0' => ['-dna', '-revcomp'], 
+  'INO_up800' => ['-dna', '-revcomp', '-bfile', catfile('common', 'yeast.nc.6.freq'), '-x_branch'],
+  'farntrans5' => ['-protein'], 'lipocalin' => ['-protein'], 'adh' => ['-protein']
+);
+my $meme_ignore = [
+  'Release date', 'http:', 'MOTIFS', 'Time', 'CPU:', 'DATAFILE=', 'DATABASE',
+  'command: ', 'Background letter frequencies', 'Last updated', '^LAM', '^$',
+  '^mast '];
+my $meme = 'meme';
+my $meme_dir = 'src/parallel';
+my @pargs = ();
+@pargs = ('-p', &num_cores()) if (&num_cores() > 1);
+
+my $counter = 1;
+foreach my $dset (@datasets) {
+  foreach my $mod (@models) {
+    &test('meme'.$counter, '',
+      $meme, '',
+      [@pargs, catfile('common', $dset . '.s'), '-oc', 'results/meme'.$counter,
+        '-mod', $mod, @{$params{$dset}}, '-nostatus', '-nmotifs', 2, '-minw', 8],
+      [
+        {
+          output => 'results/meme'.$counter.'/meme.txt', 
+          reference => catfile('meme', 'meme.'.$dset.'.'.$mod), 
+          type => 'text', 
+          ignore => $meme_ignore
+        }
+      ],
+      catdir('results', 'meme' . $counter), $meme_dir
+    );
+    $counter++;
+  }
+}
+# test psp
+&test('meme_psp', '',
+  $meme, '',
+  [@pargs, catfile('common', 'psp_test.s'), '-psp', catfile('common', 'psp_test.psp'),
+    '-minsites', 5, '-dna', '-revcomp', '-minw', 7, '-maxw', 12, '-nostatus', 
+    '-text'],
+  [{output => '-', reference => catfile('meme', 'meme.psp_test.zoops'), 
+    type => 'text', ignore => $meme_ignore}],
+  catdir('results', 'meme' . $counter), $meme_dir
+);
+

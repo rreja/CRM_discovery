@@ -1,0 +1,4 @@
+*******************************************************************************
+Test centrimo1 ...
+centrimo -verbosity 1 -oc results/centrimo -flip Klf1.s centrimo/dreme-Klf1.txt &> log
+PASSED!

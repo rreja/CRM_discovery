@@ -1,0 +1,20 @@
+#!/usr/bin/perl test_driver
+# Test gomo on single species
+&test('gomo1', '',
+  'gomo', '',
+  ['--seed', 1, '--nostatus', '--verbosity', 1, '--text', 
+    'gomo/GO2Gene.map.csv', 'gomo/ama.nozscoring.xml'],
+  [{output => '-', reference => 'gomo/gomo.smallthreshold.txt', 
+      type => 'text'}],
+  'results/gomo1'
+);
+
+# Test gomo on multiple species
+&test('gomo2', '',
+  'gomo', '',
+  ['--seed', 1, '--nostatus', '--verbosity', 1, '--text', 'gomo/GO2Gene.map.csv', 
+    'gomo/ama.nozscoring.xml', 'gomo/ama.nozscoring.xml'],
+  [{output => '-', reference => 'gomo/gomo.multipeSpecies.txt', type => 'text'}],
+  'results/gomo2'
+);
+

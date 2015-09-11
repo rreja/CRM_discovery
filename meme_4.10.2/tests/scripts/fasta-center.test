@@ -1,0 +1,8 @@
+#!/usr/bin/perl test_driver
+&test('fasta-center1', '',
+  'fasta-center', 'Klf1-200.s',
+  ['-len', 100],
+  [{output => '-', reference => 'Klf1-200-100.s', type => 'text'}],
+  'results/fasta-center1', 'scripts'
+);
+

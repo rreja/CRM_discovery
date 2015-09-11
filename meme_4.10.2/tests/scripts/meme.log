@@ -1,0 +1,82 @@
+*******************************************************************************
+Test meme1 ...
+meme common/crp0.s -oc results/meme1 -mod oops -dna -revcomp -nostatus -nmotifs 2 -minw 8 &> log
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Can't locate XML/Parser/Expat.pm in @INC (@INC contains: /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/lib/perl /Users/rzr142/perl5/lib/perl5/darwin-thread-multi-2level /Users/rzr142/perl5/lib/perl5 /opt/local/lib/perl5/site_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/site_perl/5.12.4 /opt/local/lib/perl5/vendor_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/vendor_perl/5.12.4 /opt/local/lib/perl5/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/5.12.4 /opt/local/lib/perl5/site_perl /opt/local/lib/perl5/vendor_perl .) at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+BEGIN failed--compilation aborted at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+Compilation failed in require at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/meme_xml_to_html line 48.
+Warning: meme_xml_to_html exited abnormally and may have failed to create HTML output.
+-------------------------------------------------------------------------------
+meme exited with value 1 indicating failure.
+FAILED!
+*******************************************************************************
+Test meme2 ...
+meme common/crp0.s -oc results/meme2 -mod zoops -dna -revcomp -nostatus -nmotifs 2 -minw 8 &> log
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Can't locate XML/Parser/Expat.pm in @INC (@INC contains: /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/lib/perl /Users/rzr142/perl5/lib/perl5/darwin-thread-multi-2level /Users/rzr142/perl5/lib/perl5 /opt/local/lib/perl5/site_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/site_perl/5.12.4 /opt/local/lib/perl5/vendor_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/vendor_perl/5.12.4 /opt/local/lib/perl5/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/5.12.4 /opt/local/lib/perl5/site_perl /opt/local/lib/perl5/vendor_perl .) at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+BEGIN failed--compilation aborted at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+Compilation failed in require at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/meme_xml_to_html line 48.
+Warning: meme_xml_to_html exited abnormally and may have failed to create HTML output.
+-------------------------------------------------------------------------------
+meme exited with value 1 indicating failure.
+FAILED!
+*******************************************************************************
+Test meme3 ...
+meme common/crp0.s -oc results/meme3 -mod tcm -dna -revcomp -nostatus -nmotifs 2 -minw 8 &> log
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Can't locate XML/Parser/Expat.pm in @INC (@INC contains: /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/lib/perl /Users/rzr142/perl5/lib/perl5/darwin-thread-multi-2level /Users/rzr142/perl5/lib/perl5 /opt/local/lib/perl5/site_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/site_perl/5.12.4 /opt/local/lib/perl5/vendor_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/vendor_perl/5.12.4 /opt/local/lib/perl5/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/5.12.4 /opt/local/lib/perl5/site_perl /opt/local/lib/perl5/vendor_perl .) at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+BEGIN failed--compilation aborted at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+Compilation failed in require at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/meme_xml_to_html line 48.
+Warning: meme_xml_to_html exited abnormally and may have failed to create HTML output.
+-------------------------------------------------------------------------------
+meme exited with value 1 indicating failure.
+FAILED!
+*******************************************************************************
+Test meme4 ...
+meme common/adh.s -oc results/meme4 -mod oops -protein -nostatus -nmotifs 2 -minw 8 &> log
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Can't locate XML/Parser/Expat.pm in @INC (@INC contains: /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/lib/perl /Users/rzr142/perl5/lib/perl5/darwin-thread-multi-2level /Users/rzr142/perl5/lib/perl5 /opt/local/lib/perl5/site_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/site_perl/5.12.4 /opt/local/lib/perl5/vendor_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/vendor_perl/5.12.4 /opt/local/lib/perl5/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/5.12.4 /opt/local/lib/perl5/site_perl /opt/local/lib/perl5/vendor_perl .) at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+BEGIN failed--compilation aborted at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+Compilation failed in require at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/meme_xml_to_html line 48.
+Warning: meme_xml_to_html exited abnormally and may have failed to create HTML output.
+-------------------------------------------------------------------------------
+meme exited with value 1 indicating failure.
+FAILED!
+*******************************************************************************
+Test meme5 ...
+meme common/adh.s -oc results/meme5 -mod zoops -protein -nostatus -nmotifs 2 -minw 8 &> log
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Can't locate XML/Parser/Expat.pm in @INC (@INC contains: /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/lib/perl /Users/rzr142/perl5/lib/perl5/darwin-thread-multi-2level /Users/rzr142/perl5/lib/perl5 /opt/local/lib/perl5/site_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/site_perl/5.12.4 /opt/local/lib/perl5/vendor_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/vendor_perl/5.12.4 /opt/local/lib/perl5/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/5.12.4 /opt/local/lib/perl5/site_perl /opt/local/lib/perl5/vendor_perl .) at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+BEGIN failed--compilation aborted at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+Compilation failed in require at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/meme_xml_to_html line 48.
+Warning: meme_xml_to_html exited abnormally and may have failed to create HTML output.
+-------------------------------------------------------------------------------
+meme exited with value 1 indicating failure.
+FAILED!
+*******************************************************************************
+Test meme6 ...
+meme common/adh.s -oc results/meme6 -mod tcm -protein -nostatus -nmotifs 2 -minw 8 &> log
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Warning: Can not convert EPS file to PNG as no install of Image Magick or Ghostscript is usable.
+Can't locate XML/Parser/Expat.pm in @INC (@INC contains: /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/lib/perl /Users/rzr142/perl5/lib/perl5/darwin-thread-multi-2level /Users/rzr142/perl5/lib/perl5 /opt/local/lib/perl5/site_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/site_perl/5.12.4 /opt/local/lib/perl5/vendor_perl/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/vendor_perl/5.12.4 /opt/local/lib/perl5/5.12.4/darwin-thread-multi-2level /opt/local/lib/perl5/5.12.4 /opt/local/lib/perl5/site_perl /opt/local/lib/perl5/vendor_perl .) at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+BEGIN failed--compilation aborted at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/MemeSAX.pm line 10.
+Compilation failed in require at /Users/rzr142/People/Yu_Zhang/CRM_discovery/meme_4.10.2/scripts/meme_xml_to_html line 48.
+Warning: meme_xml_to_html exited abnormally and may have failed to create HTML output.
+-------------------------------------------------------------------------------
+meme exited with value 1 indicating failure.
+FAILED!
+*******************************************************************************
+Test meme_psp ...
+meme common/psp_test.s -psp common/psp_test.psp -minsites 5 -dna -revcomp -minw 7 -maxw 12 -nostatus -text 1> results/meme7/meme_EKiz4_stdout 2> log
+PASSED!
