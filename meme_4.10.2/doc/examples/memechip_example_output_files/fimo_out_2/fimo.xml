@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Begin document body -->
+<fimo version="4.10.2" release="Thu Aug 06 17:34:33 2015 -0700">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation=  xmlns:fimo="http://noble.gs.washington.edu/schema/fimo"
+>
+<command-line>/Users/cegrant/meme_4.10.2/bin/fimo --parse-genomic-coord --verbosity 1 --oc memechip_example_output_files/fimo_out_2 --bgfile memechip_example_output_files/background --motif 2 memechip_example_output_files/meme_out/meme.xml memechip_example_output_files/Klf1.fna</command-line>
+<settings>
+<setting name="output directory">memechip_example_output_files/fimo_out_2</setting>
+<setting name="MEME file name">memechip_example_output_files/meme_out/meme.xml</setting>
+<setting name="sequence file name">memechip_example_output_files/Klf1.fna</setting>
+<setting name="background file name">memechip_example_output_files/background</setting>
+<setting name="allow clobber">true</setting>
+<setting name="compute q-values">true</setting>
+<setting name="parse genomic coord.">true</setting>
+<setting name="text only">false</setting>
+<setting name="scan both strands">true</setting>
+<setting name="output threshold">0.0001</setting>
+<setting name="threshold type">p-value</setting>
+<setting name="max stored scores">100000</setting>
+<setting name="pseudocount">0.1</setting>
+<setting name="verbosity">1</setting>
+<setting name="selected motif">2</setting>
+</settings>
+<sequence-data num-sequences="904" num-residues="452000" />
+<alphabet>nucleotide</alphabet>
+<motif name="1" width="12" best-possible-match="CAGCCACACCCA"/>
+<motif name="2" width="8" best-possible-match="CAGATAAG"/>
+<motif name="3" width="29" best-possible-match="CTGCATCTCTTCAAGACACACCTAACTGC"/>
+<background source="memechip_example_output_files/background">
+<value letter="A">0.256</value>
+<value letter="C">0.244</value>
+<value letter="G">0.244</value>
+<value letter="T">0.256</value>
+</background>
+<cisml-file>cisml.xml</cisml-file>
+</fimo>

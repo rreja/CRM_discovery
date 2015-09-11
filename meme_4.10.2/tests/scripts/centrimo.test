@@ -1,0 +1,20 @@
+#!/usr/bin/perl test_driver
+&test('centrimo1', 'centrimo with flip',
+  'centrimo', '',
+  ['-verbosity', 1, '-oc', 'results/centrimo', '-flip',
+    'Klf1.s', 'centrimo/dreme-Klf1.txt'],
+  [
+    {
+      output => 'results/centrimo/site_counts.txt', 
+      reference => 'centrimo/site_counts.txt', 
+      type => 'text', ignore => ['^#']
+    },
+    {
+      output => 'results/centrimo/centrimo.txt', 
+      reference => 'centrimo/centrimo.txt', 
+      type => 'text', ignore => ['^#']
+    }
+  ],
+  'results/centrimo'
+);
+

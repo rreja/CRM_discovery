@@ -1,0 +1,28 @@
+*******************************************************************************
+Test create-priors1 ...
+create-priors --seq-size 100007585 -oc results/create-priors1 create-priors/DNaseHS_gm12878.wig &> log
+Creating priors with alpha=1.0 and beta=10000
+Sequence size is 100007585 bases.
+Scores were observed for 4140 bases.
+Minimum score is 1
+Median score is 1
+Maximum score is 3.97638
+Sum of scores is 7156.07
+Sum of un-normalized priors is 2.51587e+07
+Sum of normalized priors = 10000
+Sum of prior distribution = 1
+PASSED!
+*******************************************************************************
+Test create-priors2 ...
+create-priors --seq-size 100007585 -oc results/create-priors2 create-priors/DNaseHS_gm12878.wig &> log
+Creating priors with alpha=1.0 and beta=10000
+Sequence size is 100007585 bases.
+Scores were observed for 4140 bases.
+Minimum score is 1
+Median score is 1
+Maximum score is 3.97638
+Sum of scores is 7156.07
+Sum of un-normalized priors is 2.51587e+07
+Sum of normalized priors = 10000
+Sum of prior distribution = 1
+PASSED!

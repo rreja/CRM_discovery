@@ -1,0 +1,8 @@
+*******************************************************************************
+Test gomo1 ...
+gomo --seed 1 --nostatus --verbosity 1 --text gomo/GO2Gene.map.csv gomo/ama.nozscoring.xml 1> results/gomo1/gomo_lgZjh_stdout 2> log
+PASSED!
+*******************************************************************************
+Test gomo2 ...
+gomo --seed 1 --nostatus --verbosity 1 --text gomo/GO2Gene.map.csv gomo/ama.nozscoring.xml gomo/ama.nozscoring.xml 1> results/gomo2/gomo_NJP2C_stdout 2> log
+PASSED!

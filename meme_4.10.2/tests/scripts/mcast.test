@@ -1,0 +1,15 @@
+#!/usr/bin/perl test_driver
+# Test mcast (basic)
+&test('mcast1', '',
+  'mcast', '',
+  ['-oc', 'results/mcast1', 'meme/meme.lex0.zoops', 'common/lex0.s'],
+  [
+    {
+      output => 'results/mcast1/mcast.txt', 
+      reference => 'mcast/lex0.zoops.mcast', 
+      type => 'text', ignore => ['# Create date', 'microsec/character']
+    }
+  ],
+  'results/mcast1'
+);
+

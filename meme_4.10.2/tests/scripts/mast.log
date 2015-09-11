@@ -1,0 +1,72 @@
+*******************************************************************************
+Test mast1 ...
+mast meme/meme.crp0.oops common/crp0.s -oc results/mast1 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast2 ...
+mast meme/meme.crp0.zoops common/crp0.s -oc results/mast2 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast3 ...
+mast meme/meme.crp0.tcm common/crp0.s -oc results/mast3 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast4 ...
+mast meme/meme.INO_up800.oops common/INO_up800.s -oc results/mast4 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast5 ...
+mast meme/meme.INO_up800.zoops common/INO_up800.s -oc results/mast5 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast6 ...
+mast meme/meme.INO_up800.tcm common/INO_up800.s -oc results/mast6 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast7 ...
+mast meme/meme.farntrans5.oops common/farntrans5.s -oc results/mast7 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast8 ...
+mast meme/meme.farntrans5.zoops common/farntrans5.s -oc results/mast8 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast9 ...
+mast meme/meme.farntrans5.tcm common/farntrans5.s -oc results/mast9 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast10 ...
+mast meme/meme.lipocalin.oops common/lipocalin.s -oc results/mast10 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast11 ...
+mast meme/meme.lipocalin.zoops common/lipocalin.s -oc results/mast11 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast12 ...
+mast meme/meme.lipocalin.tcm common/lipocalin.s -oc results/mast12 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast13 ...
+mast meme/meme.adh.oops common/adh.s -oc results/mast13 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast14 ...
+mast meme/meme.adh.oops - -oc results/mast14 -nohtml -nostatus -df stdin -dna -seqp < common/mini-drosoph.s &> log
+PASSED!
+*******************************************************************************
+Test mast15 ...
+mast meme/meme.adh.zoops common/adh.s -oc results/mast15 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast16 ...
+mast meme/meme.adh.zoops - -oc results/mast16 -nohtml -nostatus -df stdin -dna -seqp < common/mini-drosoph.s &> log
+PASSED!
+*******************************************************************************
+Test mast17 ...
+mast meme/meme.adh.tcm common/adh.s -oc results/mast17 -nohtml -nostatus &> log
+PASSED!
+*******************************************************************************
+Test mast18 ...
+mast meme/meme.adh.tcm - -oc results/mast18 -nohtml -nostatus -df stdin -dna -seqp < common/mini-drosoph.s &> log
+PASSED!

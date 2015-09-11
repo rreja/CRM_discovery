@@ -1,0 +1,4 @@
+*******************************************************************************
+Test glam2scan1 ...
+glam2scan p glam2/glam2.txt At.s 1> results/glam2scan1/glam2scan_cacZk_stdout 2> log
+PASSED!

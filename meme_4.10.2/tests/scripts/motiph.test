@@ -1,0 +1,19 @@
+#!/usr/bin/perl test_driver
+# Test motiph
+&test('motiph1', '',
+  'motiph', '',
+  ['--seed', 0, '--bg', 2.0, '--pseudocount', 0.01, '--text', 
+    'motiph/spiked.aln', 'motiph/yeast.tree', 'motiph/MCM1.meme.html'],
+  [{output => '-', reference => 'motiph/motiph.gff', type => 'text'}],
+  'results/motiph1'
+);
+
+# Test motiph with --motif option
+&test('motiph2', '',
+  'motiph', '',
+  ['--seed', 0, '--bg', 2.0, '--pseudocount', 0.01, '--text', 
+    '--output-pthresh', 1.0, '--motif', 2,  '--motif', 3, 'motiph/spiked.aln', 
+    'motiph/yeast.tree', 'common/crp0.meme.html'],
+  [{output => '-', reference => 'motiph/motiph-motif23.gff', type => 'text'}],
+  'results/motiph2'
+);

@@ -1,0 +1,4 @@
+*******************************************************************************
+Test fasta-dinucleotide-shuffle1 ...
+fasta-dinucleotide-shuffle -f Klf1-200-100.s -t -dinuc 1> results/fasta-dinucleotide-shuffle1/fasta-dinucleotide-shuffle_ekChN_stdout 2> log
+PASSED!

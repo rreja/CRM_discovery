@@ -1,0 +1,35 @@
+#!/usr/bin/perl test_driver
+# xml parts to ignore in DREME output
+my $dreme_xml_ignore = [
+    '^dreme@(release|version)$', '^dreme:model:command_line#value$', 
+    '^dreme:model:(positives|negatives)@(file|last_mod_date)$',
+    '^dreme:model:host#value$', '^dreme:model:when#value$',
+    '^dreme:run_time@.*$'
+  ];  
+# test DREME with both strands
+&test('dreme1', 'testing both strands',
+  'dreme', '',
+  ['-oc', 'results/dreme', '-v', 1, '-noxslt', '-p', 'Klf1-200-100.s'],
+  [
+    {
+      output => 'results/dreme/dreme.xml', 
+      reference => 'dreme/basic.xml', 
+      type => 'xml', ignore => $dreme_xml_ignore
+    }
+  ], 
+  'results/dreme', 'scripts'
+);
+# test DREME with a single strand
+&test('dreme2', 'testing single strand',
+  'dreme', '',
+  ['-norc', '-oc', 'results/dreme', '-v', 1, '-noxslt', '-p', 'Klf1-200-100.s'],
+  [
+    {
+      output => 'results/dreme/dreme.xml', 
+      reference => 'dreme/norc.xml', 
+      type => 'xml', ignore => $dreme_xml_ignore
+    }
+  ],
+  'results/dreme', 'scripts'
+);
+
