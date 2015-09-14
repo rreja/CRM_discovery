@@ -31,7 +31,8 @@ def process_file(options):
             
             # Run FIMO
             #os.system(FIMO_command+" --parse-genomic-coord  --thresh "+str(options.thresh)+" --motif 1 -oc "+outdirFIMO+" "+os.path.join(outdir,"meme.html")+" "+options.inFIMO)
-        sys.exit(1)
+        
+        #sys.exit(1)
     
     
     
