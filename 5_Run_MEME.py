@@ -8,7 +8,7 @@ from operator import itemgetter
 def process_file(options):
     
     MEME_command = os.path.join(os.path.dirname(os.path.realpath(__file__)),"meme_4.10.2/bin/meme")
-    FIMO_command = "'"+os.path.join(os.path.dirname(os.path.realpath(__file__)),"meme_4.10.2/bin/fimo")+"'"
+    #FIMO_command = "'"+os.path.join(os.path.dirname(os.path.realpath(__file__)),"meme_4.10.2/bin/fimo")+"'"
     
     # Read the directory containing the fasta files
     for direc in os.listdir(options.output):
@@ -24,27 +24,10 @@ def process_file(options):
             outdir = os.path.join(fasta_dir,os.path.splitext(fname)[0])
             
             # Run MEME
-            #print "'"+MEME_command+"'"+" -dna -mod zoops -nmotifs "+str(options.nmotifs)+" -minsites "+str(options.minsites)+" -revcomp -oc "+"'"+outdir+"'"+" "+fasta_file
-            
             os.system("'"+MEME_command+"'"+" -dna -mod zoops -nmotifs "+str(options.nmotifs)+" -minsites "+str(options.minsites)+" -revcomp -oc "+"'"+outdir+"'"+" "+"'"+fasta_file+"'")
             
             
-            # Run FIMO
-            #os.system(FIMO_command+" --parse-genomic-coord  --thresh "+str(options.thresh)+" --motif 1 -oc "+outdirFIMO+" "+os.path.join(outdir,"meme.html")+" "+options.inFIMO)
-        
-        #sys.exit(1)
-    
-    
-    
-    
-
-
-
-                
-        
-   
-
-
+            
 
 
 usage = '''
@@ -71,8 +54,8 @@ def run():
                       help='Number of motifs, defualt = 3')
     parser.add_option('-p', action='store', type='int', dest='minsites',default = 50, 
                       help='Minimum sites to contain motif, default = 50.')
-    parser.add_option('-s', action='store', type='float', dest='thresh',default = 0.001, 
-                      help='Threshold for FIMO motif detection.')
+    #parser.add_option('-s', action='store', type='float', dest='thresh',default = 0.001, 
+    #                  help='Threshold for FIMO motif detection.')
     parser.add_option('-i', action='store', type='string', dest='fasta', 
                       help='Reference FASTA file.')
     
