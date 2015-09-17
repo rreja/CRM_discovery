@@ -1,4 +1,4 @@
-Peak Statistics
+Discovering Cis-Regulatory Modules using ChIP-exo
 ================
 
 Introduction
