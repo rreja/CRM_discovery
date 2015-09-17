@@ -52,10 +52,14 @@ def process_file(options):
         state = cols[0]
         pvals = [float(x) for x in cols[1:]]
         outdir = os.path.join(options.output,"E"+state)
-        
+       
         # Create a peak direcotry in each folder
         peak_dir = os.path.join(outdir,"peaks")
         if not os.path.exists(peak_dir): os.makedirs(peak_dir)
+        
+        # Filter the TSS and the enriched region using a TSS overlap.
+        sloped_original = return_filename(outdir,"*_segments.gff")
+        return_closest(os.path.join(outdir,sloped_original),options,outdir,state)
         
         out = open(os.path.join(outdir,"factors.txt"),"w")
         for i,j in zip(label,pvals):
@@ -64,7 +68,9 @@ def process_file(options):
                 out.write(i+"\n")
                 # Writing the peak files that intersect with enriched segments.
                 infile = return_filename(options.peakdir,i+"*")
+                
                 sloped = return_filename(outdir,"*_segments.gff")
+        
                 inter = os.path.join(peak_dir,infile)
                 pybedtools.BedTool(os.path.join(options.peakdir,infile)).intersect(os.path.join(outdir,sloped),u=True).saveas(inter)
                 
@@ -122,7 +128,29 @@ def return_filename(outdir,pattern):
             return(file)
    
                 
-        
+def return_closest(sloped,options,outdir,state):
+    inter = os.path.join(outdir,"closest.txt")
+    TSS_file = os.path.join(outdir,"enriched_TSS.gff")
+    state_file = os.path.join(outdir,"E"+state+"_state_segments.gff")
+    out_state = open(state_file,"w")
+    out_tss = open(TSS_file,"w")
+    pybedtools.BedTool(options.tss).closest(sloped,D="a").saveas(inter)
+    in0 = open(inter,"rt")
+    for line in in0:
+        cols = line.rstrip().split("\t")
+        if cols[9] == ".":
+            continue
+        if int(cols[18]) >= -300 and int(cols[18]) <= 100:
+            out_tss.write(cols[0]+"\t"+cols[1]+"\t"+cols[2]+"\t"+cols[3]+"\t"+cols[4]+"\t"+cols[5]+"\t"+cols[6]+"\t"+cols[7]+"\t"+cols[8]+"\n")
+            out_state.write(cols[9]+"\t"+cols[10]+"\t"+cols[11]+"\t"+cols[12]+"\t"+cols[13]+"\t"+cols[14]+"\t"+cols[15]+"\t"+cols[16]+"\t"+cols[17]+"\n")
+    
+    in0.close()
+    out_tss.close()
+    out_state.close()
+    os.system("rm "+"'"+inter+"'")
+    os.system("rm "+"'"+sloped+"'")
+   
+    
    
 
 
@@ -156,6 +184,8 @@ def run():
                       help='Upstream/downstream distance from mid-point.')
     parser.add_option('-i', action='store', type='string', dest='fasta', 
                       help='Reference FASTA file.')
+    parser.add_option('-t', action='store', type='string', dest='tss', 
+                      help='File containing TSS coordinates.')
     
     
     (options, args) = parser.parse_args()
