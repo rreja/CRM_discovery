@@ -5,10 +5,10 @@ Introduction
 -------------
 
 The pipeline here can be used to find significant over-represented combination of transcription factors in the genome. The pipeline also gives the following:
-- Information about enriched states (combinations of factors).
-- Over-represented motifs in all enriched states.
-- Distance of reference features from enriched states.
-- Information about different reference points that might be the organization centers of these modules.
+1) Information about enriched states (combinations of factors).
+2) Over-represented motifs in all enriched states.
+3) Distance of reference features from enriched states.
+4) Information about different reference points that might be the organization centers of these modules.
 
 
 Requirements
