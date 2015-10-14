@@ -1,5 +1,6 @@
 from optparse import OptionParser , IndentedHelpFormatter
 import sys, os, re, operator, math
+from random import shuffle
 from collections import OrderedDict
 from operator import add
 import numpy as np
@@ -9,12 +10,16 @@ from pylab import *
 def  process_file(cdtDir,options):
     xdata = []
     ydata = []
+    significant = {}
+    iterations = 1000
     z = []
-    #data = defaultdict(list)
+    data = {}
+    data_to_shuffle = {}
     outfile = os.path.join(cdtDir,"Means_vs_std_plot.svg")
+    outfile2 = os.path.join(cdtDir,"distribution_of_stds.txt")
     for fname in os.listdir(cdtDir):
-        data = {}
-        if not (fname.endswith('.cdt') or fname.endswith('.txt')):
+        
+        if not (fname.endswith('.cdt')):
             continue
         
         in1 = open(os.path.join(cdtDir,fname))
@@ -34,11 +39,16 @@ def  process_file(cdtDir,options):
         
         Y = movingaverage(Y,options.window)
         X = movingaverage(X,options.window)
+        length = len(Y)
+        
         X = [int(x) for x in X]
         xmin = min(X)
         xmax = max(X)
-        print xmin,xmax
+        #print xmin,xmax
         Y = [float(x)/max(Y) for x in Y]
+        
+        data_to_shuffle[label] = Y
+        
         # Get the peak
         maximum = max(Y)
         # Find the corresponding index associated with the peak
@@ -59,7 +69,52 @@ def  process_file(cdtDir,options):
     for i, txt in enumerate(z):
         ax.annotate(txt, (xdata[i],ydata[i]))
     savefig(outfile)
-        
+    
+    
+    # Shuffle original Y values
+    for label,Y in data_to_shuffle.items():
+        stds, count = create_shuffle_vectors(Y,xmin,xmax,iterations,ydata[z.index(label)],label)
+        data[label] = stds
+        significant[label] = float(count)/iterations
+    
+    
+    # create file for stds
+    out2 = open(outfile2,"w")
+    # writing header
+    l = "fname"
+    for k in z:
+        l = l+"\t"+k
+    out2.write(l+"\n")
+    
+    for j in range(0,iterations):
+        line = "count"+str(j)
+        for keys in z:
+            line = line+"\t"+str(data[keys][j])
+        out2.write(line+"\n")
+    
+    print "The significant factors around this reference point are:"
+    for k,v in significant.items():
+        if v <= 0.01:
+            print k+"\t"+str(v)
+    
+            
+
+   
+            
+def create_shuffle_vectors(copy_Y,xmin,xmax,iterations,obs,label):
+    stds = []
+    count = 1
+    for j in range(0,iterations):
+        shuffle(copy_Y)
+        maximum = max(copy_Y)
+        index_of_closest_value =  min(range(len(copy_Y)), key=lambda i: abs(copy_Y[i]-maximum))
+        rel_value = index_of_closest_value + xmin
+        std_exp = calculate_std(rel_value,xmin,xmax,copy_Y)
+        if std_exp <= obs:
+            count = count + 1
+        stds.append(std_exp)
+    
+    return(stds,count)
         
         
             
