@@ -75,6 +75,7 @@ def process_file(options):
         print "Processing state "+direc
         # Create a file that contains the enriched motifs for each state and their E-values
         motif_file = os.path.join(os.path.join(options.output,direc),"enriched_motifs.txt")
+        network_file = os.path.join(os.path.join(options.output,direc),"network.txt")
         outm = open(motif_file,"w")
         # directory containing fasta files:
         fasta_dir = os.path.join(direc_path,"peaks")
@@ -101,12 +102,12 @@ def process_file(options):
         merged = []
         seen = []
         new_dataset = {}
-        for k1,v1 in find_cliques(list1).items():
+        for k1,v1 in find_cliques(list1,network_file).items():
             merged = v1
             # if the list belonging to k1 is already been merged then skip it here.
             if k1 in seen:
                 continue
-            for k2,v2 in find_cliques(list1).items():
+            for k2,v2 in find_cliques(list1,network_file).items():
                 # if the list belonging to k2 is already been merged then skip it here.
                 if k2 in seen:
                     continue
@@ -135,10 +136,19 @@ def process_file(options):
         
                 
             
-def find_cliques(list1):
+def find_cliques(list1,network_file):
+    out = open(network_file,"w")
     d = defaultdict(list)
     for k, v in list1:
         d[k].append(v)
+    
+    # Printing the network file here, optional code.
+    for k,v in d.items():
+        for vals in v:
+            out.write(k+"\t"+vals+"\n")
+    
+    # Remove sys.exit from here.
+    sys.exit(1)
     return d        
     
     
