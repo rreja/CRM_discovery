@@ -121,11 +121,14 @@ def create_shuffle_vectors(copy_Y,xmin,xmax,iterations,obs,label):
             
 def calculate_std(ref_point,xmin,xmax,array):
     variance = []
+    weights = []
     for j in range(xmin,xmax):
         index = j + xmax
         variance.append(array[index]*(j-ref_point)*(j-ref_point))
+        weights.append(array[index])
     
-    std = math.pow(sum(variance)/len(variance),0.5)
+    #std = math.pow(sum(variance)/len(variance),0.5)
+    std = math.pow(sum(variance)/sum(weights),0.5)
     return(std)
 
 def movingaverage(interval, window_size):
