@@ -1,12 +1,13 @@
-Discovering Cis-Regulatory Modules using ChIP-exo
+Identifying high resolution reference points using ChIP-exo
 ================
 
 Introduction
 -------------
 
-The pipeline here can be used to find significant over-represented combination of transcription factors in the genome. The pipeline also gives the following:
-1) Information about enriched states (combinations of factors).
-2) Over-represented motifs in all enriched states.
+The pipeline proposed here can be used to find high resolution reference coordinates.The pipeline also gives the following:
+1) Genomic regions containing over represented combination of factors.
+2) Over-represented motifs in these enriched regions.
+3) Test each candidate reference as a potential organizing center.
 3) Distance of reference features from enriched states.
 4) Information about different reference points that might be the organization centers of these modules.
 
