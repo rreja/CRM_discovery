@@ -7,9 +7,8 @@ Introduction
 The pipeline proposed here can be used to find high resolution reference coordinates.The pipeline also gives the following:
 1) Genomic regions containing over represented combination of factors.
 2) Over-represented motifs in these enriched regions.
-3) Test each candidate reference as a potential organizing center.
-3) Distance of reference features from enriched states.
-4) Information about different reference points that might be the organization centers of these modules.
+3) Assessment of each candidate reference as a potential organizing center.
+4) Distance of reference features from each other.
 
 
 Requirements
