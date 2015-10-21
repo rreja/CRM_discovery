@@ -15,7 +15,7 @@ def process_file_1(options,outdir):
     genome_length = get_start_end(options.gfile)
     # Calculation of total mappable windows in the genome
     total_windows =  options.gsize/options.window
-    print "Total number of mappable windows in the genome = "+str(total_windows)
+    #print "Total number of mappable windows in the genome = "+str(total_windows)
     
     BAM_files = {}
     # Read through the BAM files
@@ -53,7 +53,7 @@ def process_file_1(options,outdir):
             
         new_peak_borders = expand_peak_borders(peak_info,BAM_files[label],options,genome_length,total_windows)
         
-        print "Writing the peaks info for "+fname
+        #print "Writing the peaks info for "+fname
         out = open(outfile,"w")
         for k,v in new_peak_borders.items():
             vals = v.split(":")
@@ -70,8 +70,8 @@ def expand_peak_borders(peak_info,bamFile,options,genome_length,total_windows):
     expected_reads_per_window = float(total_read)/total_windows
     if expected_reads_per_window < 1:
         expected_reads_per_window = 1
-    print "Total reads in file = "+str(total_read)
-    print "Expected reads per window = "+str(expected_reads_per_window)
+    #print "Total reads in file = "+str(total_read)
+    #print "Expected reads per window = "+str(expected_reads_per_window)
     p = 0.5
     
     new_peak_borders = {}

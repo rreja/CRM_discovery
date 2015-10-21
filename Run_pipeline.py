@@ -6,14 +6,29 @@ import numpy as np
 import pybedtools
 from operator import itemgetter
 import pysam
-from expand_peaks_to_get_borders_1 import *
+from expand_peaks_to_get_borders_1 import process_file_1
+from create_chromHMM_input_2 import process_file_2
 
 
 
-def process_file(options,outdir):
+def process_file(options):
     
-    process_file_1(options,outdir)
-    print "done"
+    outdir = os.path.join(options.peakDir,"_expanded_regions")
+    if not os.path.exists(outdir): os.makedirs(outdir)
+    
+    # Pipeline step-1: Expand peak-pairs to get border
+    print "STEP-1: Expanding peaks to get border."
+    #process_file_1(options,outdir)
+    print "STEP-1 completed!"
+    
+    
+    # Pipeline step-2: Create input for chromHMM
+    chromHMM_input = os.path.join(outdir,"_chromHMM_INPUT")
+    if not os.path.exists(chromHMM_input): os.makedirs(chromHMM_input)
+    
+    print "STEP-2: Creating chromHMM Input."
+    process_file_2(options.gfile,options.peakDir,options.ilen,chromHMM_input)
+    print "STEP-2 completed!"
     
  
 
@@ -24,6 +39,7 @@ input_paths may be:
 
 example usages:
 python Run_pipeline.py [OPTIONS]
+**** Remember that your BAM file and your peak file should start with "factorname_"
 '''.lstrip()
 
 
@@ -41,21 +57,18 @@ def run():
     parser.add_option('-i', action='store', type='string', dest='BAMdir',
                       help='The directory containing the BAM files.')
     parser.add_option('-w', action='store', type='int', dest='window',default=20,
-                      help='Window size')
+                      help='Window size, default = 20')
     parser.add_option('-g', action='store', type='string', dest='gfile',
                       help='File containing the chromosome number and length.')
     parser.add_option('-s', action='store', type='int', dest='gsize',default=11332237,
                       help='Mappable genome size: sg11 = 11,332,237 (default), hg19=248,988,565, mm9=2,178,433,024 for read length = 36. Refer PMID:22276185')
     parser.add_option('-v', action='store', type='float', dest='pval',default=0.05,
                       help='P-value cutoff for significant enrichment over background, default = 0.05')
+    parser.add_option('-l', action='store', type='int', dest='ilen', default = 200,
+                      help='Length of chromHMM segmentation interval, default = 200')
     
     (options, args) = parser.parse_args()
-    
-    outdir = os.path.join(options.peakDir,"_expanded_regions")
-    if not os.path.exists(outdir): os.makedirs(outdir)
-        
-    
-    process_file(options,outdir)
+    process_file(options)
     
     
 if __name__ == "__main__":
