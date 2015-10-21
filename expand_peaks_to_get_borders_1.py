@@ -10,7 +10,7 @@ import pysam
 
 
 
-def process_file(options,outdir):
+def process_file_1(options,outdir):
     
     genome_length = get_start_end(options.gfile)
     # Calculation of total mappable windows in the genome
@@ -248,7 +248,7 @@ def run():
     if not os.path.exists(outdir): os.makedirs(outdir)
         
     
-    process_file(options,outdir)
+    process_file_1(options,outdir)
     
     
 if __name__ == "__main__":

@@ -77,7 +77,7 @@ def process_file(options):
                 # Get top 500 peak-pairs from each and slop distance upstream/downstream.
                 sorted_inter = os.path.join(peak_dir,os.path.splitext(infile)[0]+"_top500.gff")
                 get_top500(inter,sorted_inter,options)
-                os.system("rm "+"'"+inter+"'")
+                #os.system("rm "+"'"+inter+"'")
                 
                 # extract fasta sequences
                 fastaseq = os.path.join(peak_dir,os.path.splitext(infile)[0]+"_sequences.fa")
