@@ -7,7 +7,7 @@ import pybedtools
 from operator import itemgetter
 import pysam
 from expand_peaks_to_get_borders_1 import process_file_1
-from create_chromHMM_input_2 import process_file_2
+from create_and_run_chomHMM_2 import process_file_2
 
 
 
@@ -16,21 +16,26 @@ def process_file(options):
     outdir = os.path.join(options.peakDir,"_expanded_regions")
     if not os.path.exists(outdir): os.makedirs(outdir)
     
-    # Pipeline step-1: Expand peak-pairs to get border
+    ## Pipeline step-1: Expand peak-pairs to get border
     print "STEP-1: Expanding peaks to get border."
     #process_file_1(options,outdir)
     print "STEP-1 completed!"
     
     
-    # Pipeline step-2: Create input for chromHMM
-    chromHMM_input = os.path.join(outdir,"_chromHMM_INPUT")
-    if not os.path.exists(chromHMM_input): os.makedirs(chromHMM_input)
+    # Pipeline step-2: Create chromHMM input and run chromHMM
+    ### Input directory for chromHMM input
+    chromhmm_outdir = os.path.join(outdir,"_chromHMM_INPUT")
+    if not os.path.exists(chromhmm_outdir): os.makedirs(chromhmm_outdir)
+    
+    ### Output directory for ChromHMM output
+    chromhmm_indir = os.path.join(outdir,"_chromHMM_OUTPUT")
+    if not os.path.exists(chromhmm_indir): os.makedirs(chromhmm_indir)
     
     print "STEP-2: Creating chromHMM Input."
-    process_file_2(options.gfile,options.peakDir,options.ilen,chromHMM_input)
+    process_file_2(options,options.peakDir,options.gfile,chromhmm_outdir,chromhmm_indir)
     print "STEP-2 completed!"
     
- 
+    # Pipeline step-3: Create chromHMM input and run chromHMM
 
 
 usage = '''
@@ -66,6 +71,8 @@ def run():
                       help='P-value cutoff for significant enrichment over background, default = 0.05')
     parser.add_option('-l', action='store', type='int', dest='ilen', default = 200,
                       help='Length of chromHMM segmentation interval, default = 200')
+    parser.add_option('-n', action='store', type='int', dest='state',default = 12, 
+                      help='Number of states, default = 12')
     
     (options, args) = parser.parse_args()
     process_file(options)

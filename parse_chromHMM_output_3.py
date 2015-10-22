@@ -4,8 +4,12 @@ from collections import defaultdict
 import numpy as np
 import pybedtools
 from operator import itemgetter
+from Compute_threshold_for_chromHMM import process_file_3
 
 def process_file(options):
+    
+    states = process_file_3(options.input,options.output)
+   
     
     print "Creating directory for each state."
     # Get the file names to process
@@ -50,7 +54,6 @@ def process_file(options):
             label = cols[1:]
             continue
         state = cols[0]
-        pvals = [float(x) for x in cols[1:]]
         outdir = os.path.join(options.output,"E"+state)
        
         # Create a peak direcotry in each folder
@@ -62,36 +65,34 @@ def process_file(options):
         return_closest(os.path.join(outdir,sloped_original),options,outdir,state)
         
         out = open(os.path.join(outdir,"factors.txt"),"w")
-        for i,j in zip(label,pvals):
-            if j >= options.filter:
-                
-                out.write(i+"\n")
-                # Writing the peak files that intersect with enriched segments.
-                infile = return_filename(options.peakdir,i+"*")
-                
-                sloped = return_filename(outdir,"*_segments.gff")
-        
-                inter = os.path.join(peak_dir,infile)
-                pybedtools.BedTool(os.path.join(options.peakdir,infile)).intersect(os.path.join(outdir,sloped),u=True).saveas(inter)
-                
-                # Get top 500 peak-pairs from each and slop distance upstream/downstream.
-                sorted_inter = os.path.join(peak_dir,os.path.splitext(infile)[0]+"_top500.gff")
-                get_top500(inter,sorted_inter,options)
-                #os.system("rm "+"'"+inter+"'")
-                
-                # extract fasta sequences
-                fastaseq = os.path.join(peak_dir,os.path.splitext(infile)[0]+"_sequences.fa")
-                write_out = open(fastaseq,"w")
-                a = pybedtools.BedTool(sorted_inter)
-                
-                for line in open(a.sequence(fi=options.fasta).seqfn).readlines():
-                    write_out.write(line)
-                write_out.close()
-                
-                # Remove un-necessary files.
-                os.system("rm "+"'"+sorted_inter+"'")
-                
-                
+        for vals in states[int(state)]:
+            
+            out.write(vals+"\n")
+            # Writing the peak files that intersect with enriched segments.
+            infile = return_filename(options.peakdir,vals+"*")
+            sloped = return_filename(outdir,"*_segments.gff")
+    
+            inter = os.path.join(peak_dir,infile)
+            pybedtools.BedTool(os.path.join(options.peakdir,infile)).intersect(os.path.join(outdir,sloped),u=True).saveas(inter)
+            
+            # Get top 500 peak-pairs from each and slop distance upstream/downstream.
+            sorted_inter = os.path.join(peak_dir,os.path.splitext(infile)[0]+"_top500.gff")
+            get_top500(inter,sorted_inter,options)
+            #os.system("rm "+"'"+inter+"'")
+            
+            # extract fasta sequences
+            fastaseq = os.path.join(peak_dir,os.path.splitext(infile)[0]+"_sequences.fa")
+            write_out = open(fastaseq,"w")
+            a = pybedtools.BedTool(sorted_inter)
+            
+            for line in open(a.sequence(fi=options.fasta).seqfn).readlines():
+                write_out.write(line)
+            write_out.close()
+            
+            # Remove un-necessary files.
+            os.system("rm "+"'"+sorted_inter+"'")
+            
+            
         out.close()
     
 
@@ -176,6 +177,8 @@ def run():
     parser = OptionParser(usage='%prog [options] input_paths', description=usage, formatter=CustomHelpFormatter())
     parser.add_option('-o', action='store', type='string', dest='output',
                       help='ChromHMM Output directory')
+    parser.add_option('-j', action='store', type='string', dest='input',
+                      help='ChromHMM Input directory')
     parser.add_option('-f', action='store', type='string', dest='filter',default = 0.18,
                       help='Threshold for emission probability to consider enrichment in a state, default = 0.18')
     parser.add_option('-p', action='store', type='string', dest='peakdir', 
