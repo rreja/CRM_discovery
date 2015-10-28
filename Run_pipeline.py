@@ -10,6 +10,7 @@ from expand_peaks_to_get_borders_1 import process_file_1
 from create_and_run_chomHMM_2 import process_file_2
 from parse_chromHMM_output_3 import process_file_4
 from Run_MEME_4 import process_file_5
+from parse_MEME_toget_ref_motifs_5 import process_file_6
 
 
 
@@ -49,10 +50,13 @@ def process_file(options):
     
     ## Pipeline step-5: Parse MEME output to get candidate list of motifs
     print "STEP-5: Parse MEME output to get candidate list of motifs"
-    process_file_6()
+    process_file_6(chromhmm_indir)
     print "STEP-5: Completed!"
     
-    
+    ## Pipeline step-6: Run FIMO to get locations of motif
+    print "STEP-6: Run FIMO to get motif locations."
+    process_file_7(chromhmm_indir)
+    print "STEP-5: Completed!"
 
 usage = '''
 input_paths may be:
