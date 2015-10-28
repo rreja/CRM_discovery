@@ -8,6 +8,7 @@ from operator import itemgetter
 import pysam
 from expand_peaks_to_get_borders_1 import process_file_1
 from create_and_run_chomHMM_2 import process_file_2
+from parse_chromHMM_output_3 import process_file_4
 
 
 
@@ -32,11 +33,16 @@ def process_file(options):
     if not os.path.exists(chromhmm_indir): os.makedirs(chromhmm_indir)
     
     print "STEP-2: Creating chromHMM Input."
-    process_file_2(options,options.peakDir,options.gfile,chromhmm_outdir,chromhmm_indir)
+    #process_file_2(options,options.peakDir,options.gfile,chromhmm_outdir,chromhmm_indir)
     print "STEP-2 completed!"
     
     # Pipeline step-3: Create chromHMM input and run chromHMM
-
+    print "STEP-3: Parsing chromHMM output and creating fasta files for MEME"
+    process_file_4(chromhmm_indir,chromhmm_outdir,options.peakDir,options.fasta,options.tss)
+    print "STEP-3: Completed!"
+    
+    # Pipeline step-4:
+    
 
 usage = '''
 input_paths may be:
@@ -73,6 +79,10 @@ def run():
                       help='Length of chromHMM segmentation interval, default = 200')
     parser.add_option('-n', action='store', type='int', dest='state',default = 12, 
                       help='Number of states, default = 12')
+    parser.add_option('-r', action='store', type='string', dest='fasta', 
+                      help='Reference FASTA file.')
+    parser.add_option('-t', action='store', type='string', dest='tss', 
+                      help='File containing TSS coordinates.')
     
     (options, args) = parser.parse_args()
     process_file(options)
