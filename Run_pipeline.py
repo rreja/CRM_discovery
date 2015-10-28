@@ -9,6 +9,7 @@ import pysam
 from expand_peaks_to_get_borders_1 import process_file_1
 from create_and_run_chomHMM_2 import process_file_2
 from parse_chromHMM_output_3 import process_file_4
+from Run_MEME_4 import process_file_5
 
 
 
@@ -38,10 +39,19 @@ def process_file(options):
     
     # Pipeline step-3: Create chromHMM input and run chromHMM
     print "STEP-3: Parsing chromHMM output and creating fasta files for MEME"
-    process_file_4(chromhmm_indir,chromhmm_outdir,options.peakDir,options.fasta,options.tss)
+    #process_file_4(chromhmm_indir,chromhmm_outdir,options.peakDir,options.fasta,options.tss)
     print "STEP-3: Completed!"
     
-    # Pipeline step-4:
+    # Pipeline step-4:Running MEME
+    print "STEP-4: Running  MEME to get motifs"
+    #process_file_5(chromhmm_indir)
+    print "STEP-4: Completed!"
+    
+    ## Pipeline step-5: Parse MEME output to get candidate list of motifs
+    print "STEP-5: Parse MEME output to get candidate list of motifs"
+    process_file_6()
+    print "STEP-5: Completed!"
+    
     
 
 usage = '''
