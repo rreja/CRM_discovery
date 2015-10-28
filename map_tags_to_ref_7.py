@@ -7,23 +7,21 @@ import pysam
 
 
 
-def process_file(options):
+def process_file_8(output,bamdir,up,down):
     
     bams = {}
     # Creating list of BAM files    
-    for fname in os.listdir(options.bam):
+    for fname in os.listdir(bamdir):
         if not fname.endswith(".bam"):
             continue
         labs = fname.split("_")[0]
-        bams[labs] = os.path.join(options.bam,fname)
+        bams[labs] = os.path.join(bamdir,fname)
         
     # Read the directory containing different states
-    for direc in os.listdir(options.output):
-        direc_path = os.path.join(options.output,direc)
+    for direc in os.listdir(output):
+        direc_path = os.path.join(output,direc)
         if not os.path.isdir(direc_path):
             continue
-        
-        
         
         # Get information about the motif
         Tss_file = os.path.join(direc_path,"enriched_TSS.gff")
@@ -34,7 +32,7 @@ def process_file(options):
         for fname in os.listdir(os.path.join(direc_path,"_candidate_refs")):
             if not fname.endswith(".gff"):
                 continue
-            ref_label = fname.split("-")[0]
+            ref_label = fname.split(".")[0]
             # Create directory for motifs
             
             #Create dicrecotories for CDT files.
@@ -60,34 +58,34 @@ def process_file(options):
                         #start = int(cols[3]) - options.up
                         #end = int(cols[3]) + options.down
                         ## When working with shifted tags: to include the coordinates that might be in the interval after the shift.
-                        start = int(cols[3]) - options.up - options.shift
-                        end = int(cols[3]) + options.down + options.shift
+                        start = int(cols[3]) - up
+                        end = int(cols[3]) + down
                     else:
                         ## When working with sense and anti-sense tags uncomment these.
                         #start = int(cols[4]) - options.down
                         #end = int(cols[4]) + options.up
                         ## When working with shifted tags: 
-                        start = int(cols[4]) - options.down - options.shift
-                        end = int(cols[4]) + options.up + options.shift
+                        start = int(cols[4]) - down
+                        end = int(cols[4]) + up
                     
                     key = cols[0]+":"+str(start)+":"+str(end)+":"+cols[6]
                     cdt_file[key] = get_tags_in_interval(samfile,chrom,start,end)
                     
                 in0.close()
-                write_shifted_tags(cdt_file,outdir,label,options)
-                #write_sense_antisense_file(cdt_file,outdir,label,options)
-        sys.exit(1)
+                write_shifted_tags(cdt_file,outdir,label,up,down)
+                #write_sense_antisense_file(cdt_file,outdir,label,up,down)
+        
     
 
-def write_shifted_tags(cdt_file,outdir,label,options):
+def write_shifted_tags(cdt_file,outdir,label,up,down):
     
     out_shifted = open(os.path.join(outdir,label+"_shifted_tags.cdt"),"w")
     cdt_file = return_shifted(cdt_file)
-    write_header(out_shifted,options)
+    write_header(out_shifted,up,down)
     for k,v in cdt_file.items():
         chrom = k.split(":")[0]
-        start = int(k.split(":")[1]) + options.shift
-        end = int(k.split(":")[2]) - options.shift
+        start = int(k.split(":")[1])
+        end = int(k.split(":")[2])
         strand = k.split(":")[3]
         sense = []
         anti = []
@@ -125,11 +123,11 @@ def write_shifted_tags(cdt_file,outdir,label,options):
     out_shifted.close()
     
         
-def write_sense_antisense_file(cdt_file,outdir,label,options):
+def write_sense_antisense_file(cdt_file,outdir,label,up,down):
     out_sense = open(os.path.join(outdir,label+"_sense.cdt"),"w")
     out_anti = open(os.path.join(outdir,label+"_antisense.cdt"),"w")
-    write_header(out_sense,options)
-    write_header(out_anti,options)
+    write_header(out_sense,up,down)
+    write_header(out_anti,up,down)
     for k,v in cdt_file.items():
         chrom = k.split(":")[0]
         start = int(k.split(":")[1])
@@ -277,9 +275,9 @@ def get_tags_in_interval(samfile,chrom,start,end):
     return(data)
         
                    
-def  write_header(out,options):
+def  write_header(out,up,down):
     line = "Uniqe ID\tGWEIGHT"
-    for j in range(-1*(options.up),options.down+1):
+    for j in range(-1*(up),down+1):
         line = line+"\t"+str(j)
     out.write(line+"\n")
     
@@ -314,12 +312,12 @@ def run():
                       help='Upstream distance from ref = 500.')
     parser.add_option('-d', action='store', type='int', dest='down',default = 500,
                       help='Downstream distance from ref = 500.')
-    parser.add_option('-s', action='store', type='int', dest='shift',default = 6,
-                      help='Shift tags in the 3-prime direction before plotting, default = 6')
+    #parser.add_option('-s', action='store', type='int', dest='shift',default = 6,
+    #                  help='Shift tags in the 3-prime direction before plotting, default = 6')
     
     
     (options, args) = parser.parse_args()
-    process_file(options)
+    process_file_8(options.output,options.bam,options.up,options.down)
     
     
     
