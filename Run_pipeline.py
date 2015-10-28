@@ -11,6 +11,7 @@ from create_and_run_chomHMM_2 import process_file_2
 from parse_chromHMM_output_3 import process_file_4
 from Run_MEME_4 import process_file_5
 from parse_MEME_toget_ref_motifs_5 import process_file_6
+from run_FIMO_to_get_ref_locations_6 import process_file_7
 
 
 
@@ -50,13 +51,19 @@ def process_file(options):
     
     ## Pipeline step-5: Parse MEME output to get candidate list of motifs
     print "STEP-5: Parse MEME output to get candidate list of motifs"
-    process_file_6(chromhmm_indir)
+    #process_file_6(chromhmm_indir)
     print "STEP-5: Completed!"
     
     ## Pipeline step-6: Run FIMO to get locations of motif
     print "STEP-6: Run FIMO to get motif locations."
-    process_file_7(chromhmm_indir)
-    print "STEP-5: Completed!"
+    process_file_7(chromhmm_indir,options.fasta)
+    print "STEP-6: Completed!"
+    
+    ## Pipeline step-7: Map tags to ref to get CDT file.
+    print "STEP-7: Map tags to reference points."
+    process_file_8()
+    
+    
 
 usage = '''
 input_paths may be:
