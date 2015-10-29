@@ -13,6 +13,7 @@ from Run_MEME_4 import process_file_5
 from parse_MEME_toget_ref_motifs_5 import process_file_6
 from run_FIMO_to_get_ref_locations_6 import process_file_7
 from map_tags_to_ref_7 import process_file_8
+from Plot_of_mean_vs_std_for_all_factors_8 import process_file_9
 
 
 
@@ -62,8 +63,13 @@ def process_file(options):
     
     ## Pipeline step-7: Map tags to ref to get CDT file.
     print "STEP-7: Map tags to reference points."
-    process_file_8(chromhmm_indir,options.BAMdir,options.up,options.down)
+    #process_file_8(chromhmm_indir,options.BAMdir,options.up,options.down)
     print "STEP-7: Completed!"
+    
+    ## Pipeline step-8: Assign factors to reference coordinates.
+    print "STEP-8: Assign factors to candidate reference."
+    process_file_9(chromhmm_indir)
+    print "STEP-8: Completed!"
     
 
 usage = '''
