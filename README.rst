@@ -26,7 +26,34 @@ Input
 
 Installing and Running the scripts
 -----------------------------------
+    $ python Run_pipeline.py -h
+    $ Usage: Run_pipeline.py [options] input_paths
 
+	$ input_paths may be:
+	$ - a directory to run on all files in them
+
+	$ example usages:
+	$ python Run_pipeline.py [OPTIONS]
+	$ **** Remember that your BAM file and your peak file should start with "factorname_"
+
+Options:
+  -h, --help  show this help message and exit
+  -p PEAKDIR  The directory containing the peaks call files in gff format.
+  -i BAMDIR   The directory containing the BAM files.
+  -w WINDOW   Window size, default = 20
+  -g GFILE    File containing the chromosome number and length.
+  -s GSIZE    Mappable genome size: sg11 = 11,332,237 (default),
+              hg19=248,988,565, mm9=2,178,433,024 for read length = 36. Refer
+              PMID:22276185
+  -v PVAL     P-value cutoff for significant enrichment over background,
+              default = 0.05
+  -l ILEN     Length of chromHMM segmentation interval, default = 200
+  -n STATE    Number of states, default = 12
+  -r FASTA    Reference FASTA file.
+  -t TSS      File containing TSS coordinates.
+  -u UP       Upstream distance from candidate reference point, default = 500
+  -d DOWN     Downstream distance from candidate reference point, default =
+              500
 
 
 Help menu

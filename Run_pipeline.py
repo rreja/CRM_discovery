@@ -24,7 +24,7 @@ def process_file(options):
     
     ## Pipeline step-1: Expand peak-pairs to get border
     print "STEP-1: Expanding peaks to get border."
-    #process_file_1(options,outdir)
+    process_file_1(options,outdir)
     print "STEP-1 completed!"
     
     
@@ -38,32 +38,32 @@ def process_file(options):
     if not os.path.exists(chromhmm_indir): os.makedirs(chromhmm_indir)
     
     print "STEP-2: Creating chromHMM Input."
-    #process_file_2(options,options.peakDir,options.gfile,chromhmm_outdir,chromhmm_indir)
+    process_file_2(options,options.peakDir,options.gfile,chromhmm_outdir,chromhmm_indir)
     print "STEP-2 completed!"
     
     # Pipeline step-3: Create chromHMM input and run chromHMM
     print "STEP-3: Parsing chromHMM output and creating fasta files for MEME"
-    #process_file_4(chromhmm_indir,chromhmm_outdir,options.peakDir,options.fasta,options.tss)
+    process_file_4(chromhmm_indir,chromhmm_outdir,options.peakDir,options.fasta,options.tss)
     print "STEP-3: Completed!"
     
     # Pipeline step-4:Running MEME
     print "STEP-4: Running  MEME to get motifs"
-    #process_file_5(chromhmm_indir)
+    process_file_5(chromhmm_indir)
     print "STEP-4: Completed!"
     
     ## Pipeline step-5: Parse MEME output to get candidate list of motifs
     print "STEP-5: Parse MEME output to get candidate list of motifs"
-    #process_file_6(chromhmm_indir)
+    process_file_6(chromhmm_indir)
     print "STEP-5: Completed!"
     
     ## Pipeline step-6: Run FIMO to get locations of motif
     print "STEP-6: Run FIMO to get motif locations."
-    #process_file_7(chromhmm_indir,options.fasta)
+    process_file_7(chromhmm_indir,options.fasta)
     print "STEP-6: Completed!"
     
     ## Pipeline step-7: Map tags to ref to get CDT file.
     print "STEP-7: Map tags to reference points."
-    #process_file_8(chromhmm_indir,options.BAMdir,options.up,options.down)
+    process_file_8(chromhmm_indir,options.BAMdir,options.up,options.down)
     print "STEP-7: Completed!"
     
     ## Pipeline step-8: Assign factors to reference coordinates.
