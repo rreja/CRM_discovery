@@ -39,7 +39,7 @@ Options:
 
   -h, --help  show this help message and exit
   -p PEAKDIR  The directory containing the peaks call files in gff format. **[REQUIRED]**
-  -i BAMDIR   The directory containing the BAM files. [REQUIRED]
+  -i BAMDIR   The directory containing the BAM files. **[REQUIRED]**
   -w WINDOW   Window size, default = 20 [OPTIONAL]
   -g GFILE    File containing the chromosome number and length.
   -s GSIZE    Mappable genome size: sg11 = 11,332,237 (default),
@@ -48,9 +48,9 @@ Options:
   -v PVAL     P-value cutoff for significant enrichment over background,
               default = 0.05 [OPTIONAL]
   -l ILEN     Length of chromHMM segmentation interval, default = 200 [OPTIONAL]
-  -n STATE    Number of states, default = 12 [REQUIRED]
-  -r FASTA    Reference FASTA file. [REQUIRED]
-  -t TSS      File containing TSS coordinates. [REQUIRED]
+  -n STATE    Number of states, default = 12 **[REQUIRED]**
+  -r FASTA    Reference FASTA file. **[REQUIRED]**
+  -t TSS      File containing TSS coordinates. **[REQUIRED]**
   -u UP       Upstream distance from candidate reference point, default = 500 [OPTIONAL]
   -d DOWN     Downstream distance from candidate reference point, default = 500 [OPTIONAL]
 
