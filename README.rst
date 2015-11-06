@@ -26,6 +26,12 @@ Input
 
 Installing and Running the scripts
 -----------------------------------
+If you wish to get the signal:noise ratio infomation using increasing-window quantile scan (for ex. top 1%, top 5%, top 10% etc) than use the following script::
+
+    $ perl  robust_peak_pair_stats.pl -h
+    $ Options: -i <path1>     path to the folder with index files [accepted index file extensions, idx, tab]. 
+
+
 To run the pipeline type the following::
     $ python Run_pipeline.py -h
     $ Usage: Run_pipeline.py [options] input_paths
