@@ -38,9 +38,9 @@ To run the pipeline type the following::
 Options:
 
   -h, --help  show this help message and exit
-  -p PEAKDIR  The directory containing the peaks call files in gff format.[REQUIRED]
-  -i BAMDIR   The directory containing the BAM files.[REQUIRED]
-  -w WINDOW   Window size, default = 20[OPTIONAL]
+  -p PEAKDIR  The directory containing the peaks call files in gff format. **[REQUIRED]**
+  -i BAMDIR   The directory containing the BAM files. [REQUIRED]
+  -w WINDOW   Window size, default = 20 [OPTIONAL]
   -g GFILE    File containing the chromosome number and length.
   -s GSIZE    Mappable genome size: sg11 = 11,332,237 (default),
               hg19=248,988,565, mm9=2,178,433,024 for read length = 36. Refer
