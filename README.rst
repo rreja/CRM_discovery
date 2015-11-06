@@ -24,17 +24,18 @@ Input
 - Both peak filenames and BAM filenames should start with factorname followed by "_".
 
 
-Installing and Running the scripts::
+Installing and Running the scripts
 -----------------------------------
+To run the pipeline type the following::
     $ python Run_pipeline.py -h
     $ Usage: Run_pipeline.py [options] input_paths
 
-	$ input_paths may be:
-	$ - a directory to run on all files in them
+    $ input_paths may be:
+    $ - a directory to run on all files in them
 
-	$ example usages:
-	$ python Run_pipeline.py [OPTIONS]
-	$ **** Remember that your BAM file and your peak file should start with "factorname_"
+    $ example usages:
+    $ python Run_pipeline.py [OPTIONS]
+    $ **** Remember that your BAM file and your peak file should start with "factorname_"
 
 Options:
   -h, --help  show this help message and exit
