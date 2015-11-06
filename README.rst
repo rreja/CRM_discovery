@@ -33,6 +33,7 @@ If you wish to get the signal:noise ratio infomation using increasing-window qua
 
 
 To run the pipeline type the following::
+
     $ python Run_pipeline.py -h
     $ Usage: Run_pipeline.py [options] input_paths
 
