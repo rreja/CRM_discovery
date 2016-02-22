@@ -24,7 +24,7 @@ def process_file(options):
     
     ## Pipeline step-1: Expand peak-pairs to get border
     print "STEP-1: Expanding peaks to get border."
-    process_file_1(options,outdir)
+    #process_file_1(options,outdir)
     print "STEP-1 completed!"
     
     
@@ -38,7 +38,7 @@ def process_file(options):
     if not os.path.exists(chromhmm_indir): os.makedirs(chromhmm_indir)
     
     print "STEP-2: Creating chromHMM Input."
-    process_file_2(options,options.peakDir,options.gfile,chromhmm_outdir,chromhmm_indir)
+    #process_file_2(options,options.peakDir,options.gfile,chromhmm_outdir,chromhmm_indir)
     print "STEP-2 completed!"
     
     # Pipeline step-3: Create chromHMM input and run chromHMM

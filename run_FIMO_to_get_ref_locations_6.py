@@ -7,12 +7,12 @@ import pybedtools
 
 
 
-def process_file(options):
+def process_file_7(output,fasta):
     
     FIMO_command = os.path.join(os.path.dirname(os.path.realpath(__file__)),"meme_4.10.2/bin/fimo")
     # Read the directory containing different states
-    for direc in os.listdir(options.output):
-        direc_path = os.path.join(options.output,direc)
+    for direc in os.listdir(output):
+        direc_path = os.path.join(output,direc)
         if not os.path.isdir(direc_path):
             continue
         
@@ -40,7 +40,7 @@ def process_file(options):
                 MEME_FILE = os.path.join(os.path.join(fasta_dir,fdir),"meme.txt")
                 infile = os.path.join(outdir,"fimo.gff")
                 inter = os.path.join(outdir,motif+".gff")
-                os.system("'"+FIMO_command+"'"+" --parse-genomic-coord  --thresh "+str(options.thresh)+" --motif "+str(motif_number)+" -oc "+"'"+outdir+"'"+" "+"'"+MEME_FILE+"'"+" "+options.fasta)
+                os.system("'"+FIMO_command+"'"+" --parse-genomic-coord  --thresh 0.001 --motif "+str(motif_number)+" -oc "+"'"+outdir+"'"+" "+"'"+MEME_FILE+"'"+" "+fasta)
                 pybedtools.BedTool(infile).intersect(os.path.join(direc_path,sloped),u=True).saveas(inter)
                 os.system("rm "+"'"+infile+"'")
     
@@ -94,12 +94,12 @@ def run():
                       help='ChromHMM Output directory')
     parser.add_option('-i', action='store', type='string', dest='fasta', 
                       help='Reference FASTA file.')
-    parser.add_option('-t', action='store', type='float', dest='thresh',default = 0.001,
-                      help='threshold for FIMO.default = 0.001.')
+    #parser.add_option('-t', action='store', type='float', dest='thresh',default = 0.001,
+    #                  help='threshold for FIMO.default = 0.001.')
     
     
     (options, args) = parser.parse_args()
-    process_file(options)
+    process_file_7(options.output,options.fasta)
     
     
     

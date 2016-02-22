@@ -41,7 +41,7 @@ def process_file_1(options,outdir):
             if line.startswith("#") or line.startswith("chrom"):
                 continue
             cols = line.rstrip().split("\t")
-            peak_info[cols[8]] = cols[0]+":"+cols[3]+":"+cols[4]
+            peak_info[cols[8]] = cols[0]+":"+cols[3]+":"+cols[4]+":"+cols[5]
         
         in0.close()
         
@@ -57,7 +57,7 @@ def process_file_1(options,outdir):
         out = open(outfile,"w")
         for k,v in new_peak_borders.items():
             vals = v.split(":")
-            out.write(vals[0]+"\t.\t"+k+"\t"+vals[1]+"\t"+vals[2]+"\t.\t.\t.\t"+k+"\n")
+            out.write(vals[0]+"\t.\t"+k+"\t"+vals[1]+"\t"+vals[2]+"\t"+vals[3]+"\t.\t.\t"+k+"\n")
         out.close()
         
             
@@ -78,6 +78,7 @@ def expand_peak_borders(peak_info,bamFile,options,genome_length,total_windows):
     for k,v in peak_info.items():
         chrom = v.split(":")[0]
         start = int(v.split(":")[1])
+        tag_count = v.split(":")[3]
         
         # Go upstream from start.
         flag = 1
@@ -126,7 +127,7 @@ def expand_peak_borders(peak_info,bamFile,options,genome_length,total_windows):
             new_end = old_end + options.window
             start = old_end
             
-        new_peak_borders[k] = chrom+":"+str(upstream_border)+":"+str(downstream_border)
+        new_peak_borders[k] = chrom+":"+str(upstream_border)+":"+str(downstream_border)+":"+tag_count
         
     return(new_peak_borders)
 

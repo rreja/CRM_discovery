@@ -5,6 +5,8 @@ from collections import OrderedDict
 from operator import add
 import numpy as np
 from pylab import *
+import scipy.stats
+from math import erf, sqrt
 
 
 def  process_file_9(chromHmm_output):
@@ -21,6 +23,7 @@ def  process_file_9(chromHmm_output):
             ydata = []
             significant = {}
             iterations = 1000
+            observed = {}
             z = []
             data = {}
             data_to_shuffle = {}
@@ -65,16 +68,20 @@ def  process_file_9(chromHmm_output):
                 # Change the index to relative X-coordinate value.
                 rel_value = index_of_closest_value + xmin
                 std = calculate_std(rel_value,xmin,xmax,Y)
-                #print rel_value,std,label
+                #print std,label
                 xdata.append(rel_value)
                 ydata.append(std)
                 z.append(label)
+                observed[label] = std
                 
+            print ydata
+            print z
             
             # Scatter plots
             colors = np.random.rand(50)
             fig, ax = plt.subplots()
             ax.scatter(xdata, ydata,c=colors,alpha=0.5)
+            ax.set_xlim(-200,200)
             for i, txt in enumerate(z):
                 ax.annotate(txt, (xdata[i],ydata[i]))
             savefig(outfile)
@@ -84,8 +91,10 @@ def  process_file_9(chromHmm_output):
             for label,Y in data_to_shuffle.items():
                 stds, count = create_shuffle_vectors(Y,xmin,xmax,iterations,ydata[z.index(label)],label)
                 data[label] = stds
-                significant[label] = float(count)/iterations
-            
+                #significant[label] = float(count)/iterations
+                z_score = (observed[label] - np.mean(stds))/np.std(stds)
+                #significant[label] = scipy.stats.norm.sf(abs(z_score))
+                significant[label] = z2p(z_score)
             
             # create file for stds
             out2 = open(outfile2,"w")
@@ -103,11 +112,13 @@ def  process_file_9(chromHmm_output):
             
             print "The significant factors around this reference point are:"
             for k,v in significant.items():
-                if v <= 0.01:
+                if v <= 0.05:
                     print k+"\t"+str(v)
     
             
 
+def z2p(z):
+    return 0.5 * (1 + erf(z / sqrt(2)))
    
             
 def create_shuffle_vectors(copy_Y,xmin,xmax,iterations,obs,label):

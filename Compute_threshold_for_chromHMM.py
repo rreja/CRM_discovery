@@ -65,9 +65,10 @@ def process_file_3(chromHMM_input,chromHMM_output):
         header = "States"
         for vals in v:
             fold_change = vals/(pct_genome)
-            state_vals[state].append(fold_change)
+            #state_vals[state].append(fold_change)
             
-            if fold_change >= 4:
+            #if fold_change >= 4:
+            if vals >= 0.18:
                 states[state].append(k)
                 #print vals,state
             header = header+"\t"+str(state)

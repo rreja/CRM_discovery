@@ -4,17 +4,17 @@ from collections import defaultdict
 import numpy as np
 
 
-def process_file(options,outdir,hmmdir):
+def process_file_2(options,peakDir,sg11,outdir,hmmdir):
     
     order = []
     peak_data = defaultdict(list)
-    # Reading the peak-pair directory
-    for fname in os.listdir(options.dir):
+    ## Reading the peak-pair directory
+    for fname in os.listdir(peakDir):
         if not fname.endswith(".gff"):
             continue
         label = fname.split("_")[0]
         order.append(label)
-        in0 = open(os.path.join(options.dir,fname),"rt")
+        in0 = open(os.path.join(peakDir,fname),"rt")
         for line in in0:
             if line.startswith("#") or line.startswith("chrom"):
                 continue
@@ -25,7 +25,7 @@ def process_file(options,outdir,hmmdir):
     
             
     # Read the chromosome length file
-    in0 = open(options.ref,"rt")
+    in0 = open(sg11,"rt")
     for line in in0:
         cols = line.rstrip().split("\t")
         chrom = cols[0]
@@ -57,7 +57,7 @@ def process_file(options,outdir,hmmdir):
     hmmdir_modified = "'"+hmmdir+"'"
     
     #print "java -mx1600M -jar "+chromHMM_command+" LearnModel "+outdir+" "+hmmdir+" "+str(options.state)+" sg11"
-    os.system("java -mx1600M -jar "+chromHMM_command+" LearnModel "+outdir_modified+" "+hmmdir_modified+" "+str(options.state)+" sg11")
+    os.system("java -mx1600M -jar "+chromHMM_command+" LearnModel "+outdir_modified+" "+hmmdir_modified+" "+str(options.state)+" sg11 ")
     
     print "Completed Running chromHMM, output in "+hmmdir
     
@@ -133,7 +133,7 @@ def run():
     if not os.path.exists(hmmdir): os.makedirs(hmmdir)
     
  
-    process_file(options,outdir,hmmdir)
+    process_file_2(options,options.dir,options.ref,outdir,hmmdir)
     
     
     

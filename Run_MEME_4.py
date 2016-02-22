@@ -25,7 +25,8 @@ def process_file_5(output):
             
             # Run MEME
             #os.system("'"+MEME_command+"'"+" -dna -mod zoops -nmotifs "+str(options.nmotifs)+" -minsites "+str(options.minsites)+" -revcomp -oc "+"'"+outdir+"'"+" "+"'"+fasta_file+"'")
-            os.system("'"+MEME_command+"'"+" -dna -mod zoops -nmotifs 3 -minsites 50 -maxw 15 -revcomp -oc "+"'"+outdir+"'"+" "+"'"+fasta_file+"'")
+            os.system("'"+MEME_command+"'"+" -dna -mod zoops -nmotifs 3 -minsites 50 -maxw 15 -evt 0.01 -revcomp -oc "+"'"+outdir+"'"+" "+"'"+fasta_file+"'")
+            #os.system("'"+MEME_command+"'"+" -dna -mod zoops -nmotifs 3 -maxw 15 -evt 0.01 -revcomp -oc "+"'"+outdir+"'"+" "+"'"+fasta_file+"'")
             
         
             
